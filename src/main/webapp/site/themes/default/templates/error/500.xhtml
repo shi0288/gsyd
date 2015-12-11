@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html">
+  <h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>500页面</title>
+    <link type="text/css" rel="stylesheet"
+			href="#{request.contextPath}/site/themes/default/style/wrong.css" />
+  </h:head>
+   <script type="text/javascript"> 
+   </script>
+  <h:body style="background:#dad8d9;">
+  	<div class="wrong_500_box">
+  		<img src="#{request.contextPath}/site/themes/default/images/error/wrong-500.png" border="0" usemap="#Map" />
+        <map name="Map" id="Map">
+          <area shape="rect" coords="131,395,224,418" href="javascript:history.go(-1);" />
+          <area shape="rect" coords="244,395,324,418" href="#{request.contextPath}/" />
+          <area shape="rect" coords="339,393,442,418" href="javascript:window.location='http://www.baidu.com'" />
+        </map>
+      </div>
+  </h:body>
+</html>
+

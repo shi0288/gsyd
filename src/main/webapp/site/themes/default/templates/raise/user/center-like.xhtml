@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+	<ui:include src="userCenterTop.xhtml"></ui:include>
+	<script>
+		$(function(){
+			$(".fq-tab-mene a").click(function(){
+				$(".fq-tab-mene .selected").removeClass("selected");
+				$(this).addClass("selected");
+				clearPage();
+			});
+		});
+	</script>
+	<!---->
+	<!--header end-->
+	<!--central begin-->
+	<div class="wrapper-central">
+		<p class="tip-tit">我的项目</p>
+	    <div class="central-01">
+	    	<div class="central-01-tab">
+	        	<div class="tab01-menu">
+	            	<ul class="clear">
+	                	<li class="font18" onclick="location.href='#{path}/raise/user/center'">我发起的<span class="font12 colorff mine-count">10</span></li>
+	                    <li class="font18 current-tab">我喜欢的<span class="font12 colorff like-count">22</span></li>
+	                    <li class="font18" onclick="location.href='#{path}/raise/user/centerSupport'">我支持的<span class="font12 colorff support-count">24</span></li>
+	                </ul>
+	                <div class="bor-line"></div>
+	            </div>
+	            <h:form id="form">
+				<p:remoteCommand process="@this" immediate="true" name="clearPage" actionListener="#{raiseLoanList.setCurrentPage(1)}"></p:remoteCommand>
+	            <f:event type="preRenderComponent" listener="#{raiseLoanList.setUserId(loginUserInfo.loginUserId)}"></f:event>
+	            <f:event type="preRenderComponent" listener="#{raiseLoanList.addOrder('rl.commitTime','desc')}"></f:event>
+	            <div class="tab01-con">
+	            	<div style="display:block">
+	                	<div class="fq-tab-mene">
+							<h:commandLink value="全部" styleClass="select selected">
+								<f:ajax listener="#{raiseLoanList.example.setStatus('')}" render="dataTable"/>
+							</h:commandLink>
+							<h:commandLink value="准备中" styleClass="select">
+								<f:ajax listener="#{raiseLoanList.example.setStatus(RaiseLoanStatus.DRAFT)}" render="dataTable"/>
+							</h:commandLink>
+							<h:commandLink value="众筹中" styleClass="select">
+								<f:ajax listener="#{raiseLoanList.example.setStatus(RaiseLoanStatus.RAISING)}" render="dataTable"/>
+							</h:commandLink>
+							<h:commandLink value="已完成" styleClass="select">
+								<f:ajax listener="#{raiseLoanList.example.setStatus(RaiseLoanStatus.COMPLETE)}" render="dataTable"/>
+							</h:commandLink>
+	                    </div>
+	                    <div class="fq-tab-con">
+	                    	<div>
+	                    		<h:panelGroup id="dataTable" style="display:block;">
+	                        	<table class="fq-qb-tb">
+	                            	<tr><td>项目名称</td><td>发起日期</td><td>截止日期</td><td>目标</td><td>进度</td><td>状态</td></tr>
+	                            	<ui:repeat var="raiseLoan" value="#{raiseLoanList.lazyModelData}">
+	                                <tr>
+	                                	<td>
+	                                		<a href="#{path}/raise/loanDetail/#{raiseLoan.id}">
+	                                		<img class="xm-pic" src="#{path}#{raiseLoan.photo}"/>
+	                                		<span class="xm-name">#{raiseLoan.title}</span>
+	                                		</a>
+	                                	</td>
+	                                	<td>
+	                                		<h:outputText value="未发布" rendered="#{empty raiseLoan.verifyTime}"></h:outputText>
+	                                		<h:outputText value="#{raiseLoan.verifyTime}" rendered="#{not empty raiseLoan.verifyTime}"><f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" /></h:outputText>
+	                                	</td>
+	                                	<td>
+	                                		<h:outputText value="未发布" rendered="#{empty raiseLoan.verifyTime}"></h:outputText>
+	                                		<h:outputText value="#{of:addDays(raiseLoan.verifyTime, raiseLoan.deadline)}" rendered="#{not empty raiseLoan.verifyTime}"><f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" /></h:outputText>
+	                                	</td>
+	                                	<td><h:outputText value="#{raiseLoan.money}"><f:convertNumber type="number" pattern="#,###" /></h:outputText></td>
+	                                	<td>
+	                                		<h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)}"><f:convertNumber type="number" pattern="#,###" /></h:outputText>元<br />
+	                                		<h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)/raiseLoan.money}"><f:convertNumber type="number" pattern="#,###.##%" /></h:outputText>
+	                                	</td>
+	                                	<td>
+	                                		#{dictUtil.getValue('raise_loan_status',raiseLoan.status)}<br />
+	                                	</td>
+	                                </tr>
+	                                </ui:repeat>
+	                            </table>
+	                            <p class="zc-pagebar mg-top">
+		                               <ui:include src="../loan-list-paging.xhtml"></ui:include>
+	                            </p>
+	                            </h:panelGroup>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	            </h:form>
+	        </div>
+	    </div>
+	</div>
+</ui:define>
+</ui:composition>

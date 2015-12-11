@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+<ui:param name="path" value="#{request.contextPath}"></ui:param>
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+			<meta name="renderer" content="webkit"/>
+			<title>#{siteVars.siteName}</title>
+		</f:facet>
+		<h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/jquery.artDialog.js?skin=idialog"></script>
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/common.js"></script>
+		<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/common.css" />
+		<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/raise/base.css" />
+		<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/raise/login.css" />
+		<script>
+			$(function(){
+// 				if(location.href.indexOf("Login") == -1){
+// 					$("input[name=spring-security-redirect]").remove();
+// 				}
+			});
+		</script>
+	</h:head>
+	<h:body style="background:#f3f3f3;">
+		<archer:archerMessages focus="true" showGlobalMessages="true" severity="0,2"></archer:archerMessages>
+		<div class="tipper">
+			<div class="tip clear">
+		    	<div class="fl"><a href="#{path}/raise"><img src="#{tplVars.themeImagePath}/raise/logo.png" /></a></div>
+		        <div class="fr">
+		        	<a class="zh" href="javascript:void(0)">没有账号？</a>
+		            <a class="dl" href="#{path}/raise/register">立即注册</a>
+		        </div>
+		    </div>
+		</div>
+		<div class="lg-main">
+			<div class="lg-main-con">
+		    	<div class="login-div">
+		    		<form action="#{request.contextPath}/memberLogin" accept-charset="UTF-8" method="post">
+			    		<ui:fragment rendered="#{not empty request.getParameter('spring-security-redirect')}">
+							<input type="hidden" name="spring-security-redirect" value="#{request.getParameter('spring-security-redirect')}"></input>
+						</ui:fragment>
+						<ui:fragment rendered="#{empty request.getParameter('spring-security-redirect')}">
+							<input type="hidden" name="spring-security-redirect" value="/raise"></input>
+						</ui:fragment>
+						<input type="hidden" name="spring-security-fail-redirect" value="/raise/membersLogin"></input>
+			        	<dl class="login-dl">
+			            	<dt>用户登录</dt>
+			                <dd class="un">
+			                	<h:inputText id="j_username"  styleClass="text" />
+								<p:watermark value="请输入用户名/手机号/邮箱" for="j_username"></p:watermark>
+			                </dd>
+			                <dd class="psd">
+			                	<h:inputSecret id="j_password"/>
+								<p:watermark value="请输入密码" for="j_password"></p:watermark>
+			                </dd>
+			                <ui:fragment rendered="#{sessionScope.need_validate_code or configHome.getConfigValue('login_fail_max_times') eq '0'}">
+			                	<style>
+			                		.sina, .tencent{margin-top:15px;}
+			                		.psd{margin-top: 8px;}
+			                	</style>
+								 <dd class="yzm">
+									<h:inputText id="captcha_input" styleClass="text"></h:inputText>
+									<p:watermark value="请输入验证码" for="captcha_input"></p:watermark>
+									<a class="login_yzm" href="javascript:void(0)">
+										<img alt="点击刷新" id="verifyCode" src="#{request.contextPath}/verifyCodeServlet"
+										onclick="this.src='#{request.contextPath}/verifyCodeServlet?'+new Date().getTime()" /></a>
+								</dd>
+							</ui:fragment>
+			                <dd class="login-btn-dd">
+			                	<input name="" type="submit" class="lg-btn" value="立即登录"></input>
+			                </dd>
+			                <dd><a class="sina font12" href="#">新浪微博</a><a class="tencent font12" href="#">腾讯微博</a><a href="#{path}/raise/findpassword1" class="font12" style="margin-left:70px;">忘记密码?</a></dd>
+			            </dl>
+		            </form>
+		        </div>
+		    </div>
+		</div>
+		<div class="lg-footer">
+			<p class="font12">©2014 北京网信众筹网络科技有限公司 zhongchou.cn 版权所有     京公网安备11010502026064 | 京ICP备14016844号</p>
+		</div>
+		<ui:fragment
+			rendered="#{not empty requestScope['SPRING_SECURITY_LAST_EXCEPTION'] and requestScope['SPRING_SECURITY_LAST_EXCEPTION'].message ne 'Authentication method not supported: GET'}">
+			<script>
+						$.dialog.tips('#{requestScope['SPRING_SECURITY_LAST_EXCEPTION'].message}', 2);
+					</script>
+		</ui:fragment>
+	</h:body>
+</f:view>
+</html>

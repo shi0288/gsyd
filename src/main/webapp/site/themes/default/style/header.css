@@ -1,0 +1,184 @@
+@charset "utf-8";
+/* CSS Document */
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	font-family: 'Microsoft Yahei';
+	font-size: 14px;
+	background-color: #ffffff;
+	overflow-x: hidden;
+}
+
+.fl {
+	float: left;
+}
+
+.fr {
+	float: right;
+}
+
+img, input, textarea {
+	outline: none;
+}
+
+img {
+	border: 0;
+}
+
+i, strong {
+	font-style: normal;
+	font-weight: normal;
+}
+
+ul, ol, dl {
+	list-style: none
+}
+
+.clearfix:after {
+	clear: both;
+	content: "";
+	visibility: hidden;
+	display: block;
+}
+
+h1, h2, h4, h5, h6 {
+	font-weight: normal;
+}
+
+i, em {
+	font-style: normal;
+}
+
+b {
+	font-weight: normal;
+}
+
+.main-w {
+	width: 1100px;
+	margin: 0 auto;
+}
+
+.sm-icon {
+	display: inline-block;
+	vertical-align: middle;
+	background: url(../images/index/sm-icon.png) no-repeat;
+}
+
+.indexa {
+	text-decoration: none;
+	margin: 0;
+	padding: 0;
+	color: #fff;
+}
+
+.indexn {
+	text-decoration: none;
+	margin: 0;
+	padding: 0;
+	color: #878787;
+}
+
+.top {
+	width: 100%;
+	height: 35px;
+	background-color: #EFEFEF;
+	border-bottom: 1px solid #DBDBDB;
+}
+
+.top-con {
+	line-height: 35px;
+	color: #979797;
+	font-size: 14px;
+}
+
+.top-l i {
+	width: 16px;
+	height: 16px;
+	margin: 0 5px 0 3px;
+}
+
+.top-r a {
+	font-size: 14px;
+	color: #979797;
+}
+
+.top-r .reg, .top-r .login {
+	line-height: 20px;
+	display: inline-block;
+	padding: 0 15px;
+	margin: 0 5px;
+	background-color: #FD6303;
+	color: #fff;
+}
+
+.top-r .login {
+	background-color: #045CBE;
+}
+
+.top-r span {
+	margin: 0 5px;
+	font-size: 18px;
+}
+
+.header {
+	width: 100%;
+	height: 70px;
+	padding-top: 15px;
+}
+
+.nav>ul>li {
+	float: left;
+	position: relative;
+	line-height: 54px;
+	width: 100px;
+	margin: 0 10px;
+	position: relative;
+}
+
+.nav>ul>li>a {
+	font-size: 16px;
+	color: #3a3a3a;
+	display: block;
+	text-align: center;
+}
+
+.nav>ul>li>a:hover, .nav>ul>li.cur1>a, .nav>ul>li:hover>a {
+	font-weight: 700;
+	color: #c30d23;
+	border-bottom: 3px solid #c30d23;
+}
+
+.nav li:hover>ul {
+	display: block;
+}
+
+.nav li>ul {
+	display: none;
+	position: absolute;
+	padding: 6px 0;
+	top: 57px;
+	width: 100px;
+	text-align: center;
+	background: #fff;
+	z-index: 9999;
+	line-height: 34px;
+}
+
+.nav li>ul>li>a {
+	display: block;
+	font-size: 14px;
+	color: #3a3a3a;
+}
+
+.nav li>ul>li>a:hover {
+	font-weight: bold;
+	color: #c30d23;
+}
+
+.header .main-w .logo a img {
+	width: 209px;
+	height: 56px;
+}

@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+	<div class="wrapper-central">
+		<div class="flow-chart clear">
+	    	<div class="bz bz-01 fl">
+	        	<i class="bz-i-01"></i>
+	        </div>
+	        <div class="bz bz-02 fl">
+	            <i class="bz-i-02"></i>
+	        </div>
+	        <div class="bz bz-03 fl">
+	            <i class="bz-i-03"></i>
+	        </div>
+	        <div class="bz bz-04 fr">
+	            <i class="bz-i-04"></i>
+	        </div>
+	    </div>
+	    <div class="ztmain bz-font">
+	    	<span class="font16 bz-fon01">1.填写项目信息</span>
+	        <span class="font16 bz-fon02">2.设置回报</span>
+	        <span class="font16 bz-fon03">3.填写发布人信息</span>
+	        <span class="font16 bz-fon04">4.等待审核</span>
+	    </div>
+	    <div class="info-center ztmain">
+	        <p class="info-title">完成</p>
+	        <p class="fin-pic tec">
+	        	<img src="#{tplVars.themeImagePath}/raise/fin.png" />
+	        </p>
+	        <p class="tec font24">恭喜您</p>
+	        <p class="tec">您申请的项目已成功提交，我们将对项目进行审核，请耐心等待</p>
+	        <a class="font18 in-p-center zcol" href="#{path}/raise/user/center">进入个人中心</a>
+	    </div>
+	</div>
+</ui:define>
+</ui:composition>

@@ -1,0 +1,197 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="content">
+	<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/raise/index.css" />
+	<script type="text/javascript" src="#{tplVars.themeJSPath}/jquery.SuperSlide.2.1.1.js"></script>
+	<script type="text/javascript" src="#{tplVars.themeJSPath}/raise/index.js"></script>
+	<style>
+		div.zc-wrapper-hd{
+			position:absolute;
+		}
+	</style>
+	<script>
+		$(function(){
+			$(".sc-t-con a").click(function(){
+				$(".sc-t-con .sc-t-con-hover-font").removeClass("sc-t-con-hover-font").addClass("color00");
+				$(this).removeClass("color00").addClass("sc-t-con-hover-font");
+			})
+		});
+	</script>
+	<div id="banner">
+		<ui:include src="banner.xhtml"></ui:include>
+	</div>
+	<h:form id="form">
+	<div style="height:89px;">
+		<div class="sc-tip">
+			<div class="sc-t-con">
+		    	<ul class="clear">
+		        	<li>
+		        		<h:commandLink title="全部" value="全部" styleClass="sc-t-con-hover-font">
+								<f:ajax listener="#{raiseLoanList.example.setType('')}" render=":form:dataTable"></f:ajax>
+							</h:commandLink>
+		        	</li>
+		            <ui:repeat var="type" value="#{dictUtil.getDictByParentKey('raise_type')}">
+                    	<li>
+	                    	<h:commandLink title="#{type.value}" value="#{type.value}" styleClass="color00 #{type.key}">
+								<f:ajax listener="#{raiseLoanList.example.setType(type.key)}" render=":form:dataTable"></f:ajax>
+							</h:commandLink>
+						</li>
+                    </ui:repeat>
+		        </ul>
+		    </div>
+		</div>
+	</div>
+	<!--navigition end-->
+	<!--pro-list begin-->
+	<div class="wrapper-pro">
+		<div class="pro-title clear">
+	    	<span class="fl title-font"></span>
+	        <a class="fr ck-more" href="#{path}/raise/loanList"></a>
+	    </div>
+	     <h:panelGroup id="dataTable">
+		   <ui:param name="restriction" value="#{'(rl.status=\''}#{RaiseLoanStatus.RAISING}#{'\' or rl.status=\''}#{RaiseLoanStatus.RECHECK}#{''}#{'\' or rl.status=\''}#{RaiseLoanStatus.PAYING}#{'\' or rl.status=\''}#{RaiseLoanStatus.COMPLETE}#{'\')'}"></ui:param>
+		   <f:event type="preRenderComponent" listener="#{raiseLoanList.addRestriction(restriction)}"></f:event>
+		   <f:event type="preRenderComponent" listener="#{raiseLoanList.setPageSize(20)}"></f:event>
+		   <f:event type="preRenderComponent" listener="#{raiseLoanList.addOrder('rl.commitTime','desc')}"></f:event>
+		    <ul class="list-ul">
+		    	<ui:repeat var="raiseLoan" value="#{raiseLoanList.lazyModelData}">
+			    	<li>
+			    		<input type="hidden" value="#{raiseLoan.id}"/>
+			        	<div class="p-pic">
+			            	<img src="#{path}#{raiseLoan.photo}" />
+			            	<div class="ckz-bg">#{dictUtil.getValue('raise_loan_status',raiseLoan.status)}</div>
+			            </div>
+			            <p class="p-disc">#{raiseLoan.title}</p>
+			            <em class="progress-bar"><b style="width:#{raiseLoanHome.getRaisedMoney(raiseLoan.id)*100.0/raiseLoan.money}%"></b></em>
+			            <p class="p-num-01">
+			            	<span class="num01">
+			            		<h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)/raiseLoan.money}">
+									<f:convertNumber type="number" pattern="#,###.##%" />
+								</h:outputText>
+			            	</span>
+			            	<span class="num02">
+			            		<h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)}">
+									<f:convertNumber type="number" pattern="#,###" />
+								</h:outputText>
+			            	</span>
+			            	<span class="num03">
+			            		<h:outputText value="#{raiseLoanHome.getSupportCount(raiseLoan.id)}">
+									<f:convertNumber type="number" pattern="#,###" />
+								</h:outputText>
+			            	</span>
+			            </p>
+			            <p class="p-num-02"><span class="num01">达成率</span><span class="num02">已筹金额</span><span class="num03">支持人数</span></p>
+			        </li>
+		        </ui:repeat>
+		    </ul>
+		    <script>
+		    $(".list-ul li").each(function(i,n){
+				if((i+1)%5==0){
+					$(n).css("margin-right",0);
+				}
+			});
+		    </script>
+	    </h:panelGroup>
+	</div>
+	</h:form>
+	<!--pro-list end-->
+	<div class="pic-bg"></div>
+	<!--success-list begin-->
+	<div class="wrapper-true-pro">
+		<div class="pro-title clear">
+	    	<span class="fl title-font02"></span>
+	        <a class="fr ck-more" href="#{path}/raise/loanList?status=#{RaiseLoanStatus.COMPLETE}"></a>
+	    </div>
+	     <h:panelGroup id="dataTable2">
+		   <ui:param name="restriction" value="#{'(rl.status=\''}#{RaiseLoanStatus.PAYING}#{'\' or rl.status=\''}#{RaiseLoanStatus.COMPLETE}#{'\')'}"></ui:param>
+		   <f:event type="preRenderComponent" listener="#{raiseLoanList2.addRestriction(restriction)}"></f:event>
+		   <f:event type="preRenderComponent" listener="#{raiseLoanList2.setPageSize(4)}"></f:event>
+		   <f:event type="preRenderComponent" listener="#{raiseLoanList2.addOrder('rl.commitTime','desc')}"></f:event>
+	    <ul class="true-list">
+	    	<ui:repeat var="raiseLoan" value="#{raiseLoanList2.lazyModelData}">
+	    	<li>
+	        	<div class="t-pic">
+	            	<img src="#{path}#{raiseLoan.photo}" ></img>
+	            	<div class="opac-bg">
+	                	<span class="font12">
+	                		#{fn:substring(raiseLoan.info,0,40)}
+							<ui:fragment rendered="#{fn:length(raiseLoan.info) > 40}">..</ui:fragment>
+	                	</span>
+	                    <a class="font12 t-ck-more" href="#{path}/raise/loanDetail/#{raiseLoan.id}">查看项目</a>
+	                </div>
+	            </div>
+	            <p class="font14 color32">#{raiseLoan.title}</p>
+	            <p>
+	            	<span>已获得：
+	            		<label>
+		            		<h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)}">
+								<f:convertNumber type="number" pattern="#,###" />
+							</h:outputText>
+	            		</label>
+	            	</span>
+	            	<span>支持人数：
+	            		<label>
+	            			<h:outputText value="#{raiseLoanHome.getSupportCount(raiseLoan.id)}">
+								<f:convertNumber type="number" pattern="#,###" />
+							</h:outputText>
+	            		</label>
+	            	</span>
+	            </p>
+	            <div class="t-list-bt">
+	            	<dl>
+	                	<dt>
+	                	<ui:fragment rendered="#{not empty raiseLoan.user.photo}">
+	                		<img src="#{path}#{raiseLoan.user.photo}" />
+	                	</ui:fragment>
+	                	<ui:fragment rendered="#{empty raiseLoan.user.photo}">
+	                		<img src="#{tplVars.themeImagePath}/raise/pic.png" />
+	                	</ui:fragment>
+	                	</dt>
+	                    <dd style="height:37px;line-height:37px;"><a href="javascript:void(0)">#{raiseLoan.user.username}</a></dd>
+	                </dl>
+	            </div>
+	        </li>
+	        </ui:repeat>
+	    </ul>
+	    </h:panelGroup>
+	</div>
+	<!--success-list end-->
+	<!--info begin-->
+	<div class="info clear">
+		<div class="info-num01 fl">
+	    	<p class="info-num01-font colorff">
+	    		<h:outputText value="#{statistics.raiseLoanCount}">
+					<f:convertNumber type="number" pattern="#,###" />
+				</h:outputText>
+	    	</p>
+	        <p class="font14 colorff">项目总数</p>
+	    </div>
+	    <div class="info-num02 fl">
+	    	<p class="info-num01-font colorff">
+	    		<h:outputText value="#{statistics.supportCount}">
+					<f:convertNumber type="number" pattern="#,###" />
+				</h:outputText>
+	    	</p>
+	        <p class="font14 colorff">支持人数</p>
+	    </div>
+	    <div class="info-num03 fr">
+	    	<p class="info-num01-font colorff">
+	    		<h:outputText value="#{statistics.raisedMoney}">
+					<f:convertNumber type="number" pattern="#,###" />
+				</h:outputText>
+	    	</p>
+	        <p class="font14 colorff">累计投资金额</p>
+	    </div>
+	</div>
+	</ui:define>
+</ui:composition>

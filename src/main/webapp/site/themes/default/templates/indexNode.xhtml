@@ -1,0 +1,62 @@
+<ui:component xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:sec="http://www.springframework.org/security/facelets/tags">
+
+	
+	<div class="run">
+		<div class="run-con main-w clearfix">
+			<div class="banner-list fl" id="marquee01">
+				<i class="run-i1 sm-icon fl"></i>
+				<ul class="banner-list-ul fl">
+					<ui:repeat var="item" value="#{nodeList.getNodes('ZXDT').data}" varStatus='i'>
+						<li><a class="fl" href="#{request.contextPath}/node/ZXDT/#{item.id}" target="_blank">#{fn:substring(item.title,0,20)}</a> <span class="fr"><h:outputText value="#{item.createTime}">
+									<f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" />
+								</h:outputText></span></li>
+					</ui:repeat>
+				</ul>
+			</div>
+			<script type="text/javascript">
+				jQuery("#marquee01").slide({
+					mainCell : ".banner-list-ul",
+					autoPlay : true,
+					effect : "topLoop",
+					vis : 1
+				});
+			</script>
+			<div class="run-r fr">
+				<i class="sm-icon run-i2"></i>已有<span>￥<h:outputText value="#{loanStatistics.getLoanMoney()}">
+						<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+					</h:outputText></span>投资在国商金融完成
+			</div>
+		</div>
+	</div>
+	<!--run end-->
+	<div class="part1">
+		<ul class="main-w clearfix">
+			<li><a class="indexn" href="#{request.contextPath}/node/index/index_banner_1"><em class="icon1"></em></a>
+				<ui:param name="nodeHome1" value="#{nodeList.getNodeById('index_banner_1')}" />
+				<a class="indexn" href="#{request.contextPath}/node/index/index_banner_1">
+				<h4>#{nodeHome1.title}</h4></a>
+				<p>
+				#{stringHome.ellipsis(nodeHome1.description,100)}
+				</p></li>
+			<li><a class="indexn" href="#{request.contextPath}/node/index/index_banner_2"><em class="icon2"></em></a>
+			<ui:param name="nodeHome2" value="#{nodeList.getNodeById('index_banner_2')}" />
+				<a class="indexn" href="#{request.contextPath}/node/index/index_banner_2"><h4>#{nodeHome2.title}</h4></a>
+				<p>
+				#{stringHome.ellipsis(nodeHome2.description,100)}
+				</p></li>
+			<li><a class="indexn" href="#{request.contextPath}/node/index/index_banner_3"><em class="icon3"></em></a>
+			<ui:param name="nodeHome3" value="#{nodeList.getNodeById('index_banner_3')}" />
+				<a class="indexn" href="#{request.contextPath}/node/index/index_banner_3"><h4>#{nodeHome3.title}</h4></a>
+				<p>
+				#{stringHome.ellipsis(nodeHome3.description,100)}
+				</p></li>
+			<li><a class="indexn" href="#{request.contextPath}/node/index/index_banner_4"><em class="icon4"></em></a>
+			<ui:param name="nodeHome4" value="#{nodeList.getNodeById('index_banner_4')}" />
+				<a class="indexn" href="#{request.contextPath}/node/index/index_banner_4"><h4>#{nodeHome4.title}</h4></a>
+				<p>
+				#{stringHome.ellipsis(nodeHome4.description,100)}
+				</p></li>
+		</ul>
+	</div>
+</ui:component>

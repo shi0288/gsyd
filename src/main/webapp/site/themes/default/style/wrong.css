@@ -1,0 +1,71 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{font-family:"微软雅黑"; font-size:12px; padding:0; border:0; margin:0;}
+img,h1,h2,h3,ul,li,dl,dt,dd,p,a{margin:0; padding:0; border:0; list-style:none; text-decoration:none;}/* CSS Document */
+.clear{clear:both;}
+
+/*403样式*/
+.wrong_403_box{ width:355px; height:445px; position:absolute; left:50%; top:50%; margin-left:-177px; margin-top:-222px;}
+.wrong_403_img{width:302px; font-size:24px; line-height:80px; text-align:center; color:#d50000;}
+.wrong_403_words{padding-left:8px; font-size:14px; color:#5f5f5f; line-height:30px;}
+.wrong_403_words a{color:#3691e4; text-decoration:underline;}
+
+/*404-02样式*/
+.wrong_404_box{width:781px; height:476px; position:absolute; left:50%; top:50%; margin-left:-390px; margin-top:-238px;}
+
+/*404-04样式*/
+.wrong_404_box_04{width:1000px; height:700px; position:absolute; left:50%; top:50%; margin-left:-500px; margin-top:-350px;}
+
+/*500样式*/
+.wrong_500_box{width:612px; height:555px; position:absolute; left:50%; top:50%; margin-left:-306px; margin-top:-277px;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

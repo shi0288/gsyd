@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+<script>
+		$(function(){
+			$(".fr").on("mouseover", ".invest-operation-payback, .invest-operation-address", function(){
+				$(this).next().show();
+			});
+			$(".fr").on("mouseout", ".invest-operation-payback, .invest-operation-address", function(){
+				$(this).next().hide();
+			});
+// 			$(".invest-operation-payback, .invest-operation-address").hover(function(){
+// 				$(this).next().toggle();
+// 			});
+			$(".search").click(function(){
+				clearPage();
+			});
+		});
+	</script>
+<div class="wrapper-central">
+	<div class="person-set ztmain">
+    	<p class="tel font24">发起者后台</p>
+        <div class="ad-set-menu fl">
+        	<ul>
+            	<li><a href="#{path}/raise/user/raiser/loanList">项目列表</a></li>
+                <li class="current-ad-set"><a href="javascript:void(0)">发货管理</a></li>
+                <li><a href="#{path}/raise/user/raiser/loanUnpublish">未发布项目</a></li>
+            </ul>
+        </div>
+        <div class="fr">
+        <h:form id="form">
+        	<p:remoteCommand process="@this" immediate="true" name="clearPage" actionListener="#{raiseInvestList.setCurrentPage(1)}"></p:remoteCommand>
+        	<div class="ad-set-con-total main-birder">
+            	<div class="ad-set-tit">发货管理&#160;&#160;<span>发货、追踪&#160;&#160;(不包含无私支持)</span></div>
+            	<p class="ad-set-bg font16 colorff">清单详情</p>
+                <div class="select-span">
+<!--                     <span class="select-1"> -->
+<!--                         <select> -->
+<!--                             <option>暂无数据</option>	 -->
+<!--                         </select> -->
+<!--                     </span> -->
+                    <span class="select-2">
+                    	&#160;&#160;物流状态&#160;&#160;
+                         <h:selectOneMenu value="#{raiseInvestList.example.status}" id="status">
+	                    	<f:selectItem itemLabel="全部状态" itemValue=""/>
+	                    	<f:selectItem itemLabel="#{dictUtil.getValue('raise_invest_status',RaiseInvestStatus.WAITING_PAYBACK)}" itemValue="#{RaiseInvestStatus.WAITING_PAYBACK}"/>
+	                    	<f:selectItem itemLabel="#{dictUtil.getValue('raise_invest_status',RaiseInvestStatus.COMPLETE)}" itemValue="#{RaiseInvestStatus.COMPLETE}"/>
+<!-- 	                    	<f:selectItems value="#{dictUtil.getDictByParentKey('raise_invest_status')}" var="status" itemLabel="#{status.value}" itemValue="#{status.key}"/> -->
+	                    </h:selectOneMenu>
+                        <h:commandLink value="&#160;&#160;搜索" styleClass="search">
+                        	<f:ajax render=":form:dataTable" execute="status"></f:ajax>
+                        </h:commandLink>
+                    </span>
+<!--                     <span class="select-3"> -->
+<!--                     	<a href="#">报表下载</a> -->
+<!--                         <a href="#">批量下载</a> -->
+<!--                     </span> -->
+                </div>
+                <f:event type="preRenderComponent" listener="#{raiseInvestList.example.payback.loan.user.setId(loginUserInfo.loginUserId)}"></f:event>
+                <f:event type="preRenderComponent" listener="#{raiseInvestList.addRestriction('ri.status in (\'waiting_payback\',\'complete\')')}"></f:event>
+                <f:event type="preRenderComponent" listener="#{raiseInvestList.addRestriction('ri.payback.money > 0')}"></f:event>
+<!--                 <f:event type="preRenderComponent" listener="#{raiseInvestList.add}" -->
+                <h:panelGroup id="dataTable" style="display:block;">
+<!--                 <span class="null-div">暂无数据</span> -->
+                <table class="detail-list">
+                	<colgroup>
+                		<col width="228"/>
+                		<col width="93"/>
+                		<col width="152"/>
+                		<col width="70"/>
+                	</colgroup>
+                	<tbody><tr><td>回报名称</td><td>回报截止时间</td><td>当前状态</td><td>操作</td></tr>
+	                	<ui:repeat var="raiseInvest" value="#{raiseInvestList.lazyModelData}">
+	                    <tr>
+	                    	<td>#{raiseInvest.payback.title}</td>
+	                    	<td>
+	                    		<ui:fragment rendered="#{raiseInvest.payback.payTime eq 0}">立即回报</ui:fragment>
+	                    		<h:outputText value="#{of:addDays(raiseInvest.payback.loan.giveMoneyTime, raiseInvest.payback.payTime)}" rendered="#{raiseInvest.payback.payTime gt 0 and not empty raiseInvest.payback.loan.giveMoneyTime}">
+	                    			<f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" />
+	                    		</h:outputText>
+	                    	</td>
+	                    	<td>
+	                    		<h:outputText value="#{dictUtil.getValue('raise_invest_status',raiseInvest.status)}"></h:outputText>
+	                    		<ui:fragment rendered="#{raiseInvest.status eq RaiseInvestStatus.WAITING_PAYBACK}">
+	                    			<div class="center-invest-operation">
+                                		<span class="invest-operation-payback">回报内容</span>
+                                		<div class="cio-payback">
+                                			<p>#{raiseInvest.payback.title}</p>
+                                			<div>#{raiseInvest.payback.description}</div>
+                                		</div>
+                                		<ui:fragment rendered="#{raiseInvest.payback.money gt 0}">
+                                			<span class="invest-operation-address">回报地址</span>
+                                			<div class="cio-address">
+                                				<p>#{raiseInvest.shipAddress.name}</p>
+                                				<div>
+                                					#{raiseInvest.shipAddress.mobile}<br/>
+                                					#{raiseInvest.shipAddress.area.parent.name}&#160;#{raiseInvest.shipAddress.area.name}&#160;
+                                					#{raiseInvest.shipAddress.address}
+                                				</div>
+                                				<p>附言</p>
+                                				<div>
+                                					#{raiseInvest.message}
+                                				</div>
+                                			</div>
+                                		</ui:fragment>
+                               		</div>
+	                    		</ui:fragment>
+	                    	</td>
+	                    	<td>
+	                    		<ui:fragment rendered="#{raiseInvest.status eq RaiseInvestStatus.WAITING_PAYBACK}">
+		                    		<h:commandLink styleClass="edit" value="发货">
+		                    			<f:ajax listener="#{raiseInvestHome.chageStatus(raiseInvest.id, RaiseInvestStatus.COMPLETE)}" render=":form:dataTable"></f:ajax>
+		                    		</h:commandLink>
+	                    		</ui:fragment>
+	                    	</td>
+	                    </tr>
+	                    </ui:repeat>
+	                </tbody>
+	               </table>
+	               <p class="zc-pagebar mg-top">
+                       <ui:include src="../invest-list-paging.xhtml"></ui:include>
+                   </p>
+                   </h:panelGroup>
+            </div>
+            </h:form>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+</ui:define>
+</ui:composition>

@@ -1,0 +1,60 @@
+img { border: 0;}
+.ck-slide ul { margin: 0; padding: 0; list-style-type: none;}
+.ck-slide { position: relative; overflow: hidden;}
+.ck-slide ul.ck-slide-wrapper { position: absolute; top: 0; left: 0; z-index: 1; margin: 0; padding: 0; background:#e4e4e4;}
+.ck-slide ul.ck-slide-wrapper li { position: absolute;width:648px; height:185px; padding:30px 60px;}
+.ck-slide .ck-prev, .ck-slide .ck-next { position: absolute; top: 63%; z-index: 2; width: 35px; height: 70px; margin-top: -35px;  text-indent: -9999px; background-repeat: no-repeat; }
+.ck-slide .ck-prev { left: 5px; background: url(../images/index/arrow-left.png) no-repeat;}
+.ck-slide .ck-next { right: 5px; background: url(../images/index/arrow-right.png) no-repeat;}
+.ck-slide .ck-prev:hover{background:url(../images/index/arrow-left02.png) no-repeat;}
+.ck-slide .ck-next:hover{background:url(../images/index/arrow-right02.png) no-repeat;}
+.ck-slidebox { position: absolute; left: 50%; bottom: 12px; z-index: 30;}
+.ck-slidebox ul { height: 20px; padding: 0 4px; border-radius: 8px; background: rgba(0,0,0,0.5);}
+.ck-slidebox ul li { float: left; height: 12px; margin: 4px 4px;}
+.ck-slidebox ul li em { display: block; width: 12px; height: 12px; border-radius: 100%; background-color: #fff; text-indent: -9999px; cursor: pointer;}
+.ck-slidebox ul li.current em { background-color: #fe6500;}
+.ck-slidebox ul li em:hover { background-color: #fe6500;}
+.ck-slide { width: 100%; height: 245px; margin: 0 auto;}
+.ck-slide ul.ck-slide-wrapper { height: 245px;}
+.ck-slide-wrapper li h3{font-size:16px;}
+.ck-slide-wrapper li h3 a{color:#4f4f4f; line-height:50px;}
+.ck-slide-wrapper li h3 a span{color:#ff3600;}
+.ck-slide-wrapper li p{display:inline-block; line-height:50px; color:#4f4f4f; font-size:14px; text-align:center; padding-left:80px; background:url(../images/index/line.png) left center no-repeat; padding-right:20px;}
+.ck-slide-wrapper li p.first{padding-left:0; background:none;}
+.ck-slide-wrapper li p span{color:#ff3600; font-size:32px;}
+.ck-slide-wrapper li p span em{font-style:normal; font-size:20px;}
+.btn{width:120px; height:54px; background:url(../images/index/img01.png) no-repeat; float:right; border:0; cursor:pointer; margin-top:30px;}
+.jd {  color: #3e3e3d;  font-size: 14px;  line-height: 9px; padding-top: 21px;}
+.jd em{display:inline-block; width:225px; height:10px; background:#d0d0d0; margin:0 20px;}
+.jd em b{display:inline-block; width:60%; height:10px; background:#ff9000;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,99 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:fragment rendered="#{raiseLoanCommentList.currentPage > 1}">
+		<h:commandLink title="到上一个页面" value="上一页" styleClass="first-page">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage-1)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{raiseLoanCommentList.currentPage-5 > 0}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage-5} 页"
+			value="#{raiseLoanCommentList.currentPage-5}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage-5)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{raiseLoanCommentList.currentPage-4 > 0}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage-4} 页"
+			value="#{raiseLoanCommentList.currentPage-4}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage-4)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{raiseLoanCommentList.currentPage-3 > 0}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage-3} 页"
+			value="#{raiseLoanCommentList.currentPage-3}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage-3)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{raiseLoanCommentList.currentPage-2 > 0}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage-2} 页"
+			value="#{raiseLoanCommentList.currentPage-2}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage-2)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{raiseLoanCommentList.currentPage-1 > 0}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage-1} 页"
+			value="#{raiseLoanCommentList.currentPage-1}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage-1)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{raiseLoanCommentList.lazyModel.rowCount gt 0}">
+	<a class="current-page">#{raiseLoanCommentList.currentPage}</a>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{raiseLoanCommentList.lazyModel.rowCount/raiseLoanCommentList.pageSize > (raiseLoanCommentList.currentPage)}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage+1} 页"
+			value="#{raiseLoanCommentList.currentPage+1}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage+1)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{raiseLoanCommentList.lazyModel.rowCount/raiseLoanCommentList.pageSize > (raiseLoanCommentList.currentPage+1)}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage+2} 页"
+			value="#{raiseLoanCommentList.currentPage+2}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage+2)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{raiseLoanCommentList.lazyModel.rowCount/raiseLoanCommentList.pageSize > (raiseLoanCommentList.currentPage+2)}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage+3} 页"
+			value="#{raiseLoanCommentList.currentPage+3}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage+3)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{raiseLoanCommentList.lazyModel.rowCount/raiseLoanCommentList.pageSize > (raiseLoanCommentList.currentPage+3)}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage+4} 页"
+			value="#{raiseLoanCommentList.currentPage+4}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage+4)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{raiseLoanCommentList.lazyModel.rowCount/raiseLoanCommentList.pageSize > (raiseLoanCommentList.currentPage+4)}">
+		<h:commandLink title="到第 #{raiseLoanCommentList.currentPage+5} 页"
+			value="#{raiseLoanCommentList.currentPage+5}">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage+5)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+
+	<ui:fragment rendered="#{raiseLoanCommentList.lazyModel.rowCount>raiseLoanCommentList.pageSize*raiseLoanCommentList.currentPage}">
+		<h:commandLink title="去下一个页面" value="下一页" styleClass="next-page">
+			<f:ajax listener="#{raiseLoanCommentList.setCurrentPage(raiseLoanCommentList.currentPage+1)}"
+				render="commentList"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+</f:view>

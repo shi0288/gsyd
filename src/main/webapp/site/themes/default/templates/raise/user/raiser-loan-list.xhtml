@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+<script>
+	function toPublish(){
+		if($(".xieyi :checked").length>0){
+			location.href="#{path}/raise/loanEdit";
+		}else{
+			$.artDialog.tips("请阅读并同意《服务协议》及《众筹公告》");
+		}
+	}
+</script>
+<div class="wrapper-central">
+	<div class="person-set ztmain">
+    	<p class="tel font24">发起者后台</p>
+        <div class="ad-set-menu fl">
+        	<ul>
+            	<li class="current-ad-set"><a href="javascript:void(0)">项目列表</a></li>
+                <li><a href="#{path}/raise/user/raiser/shipList">发货管理</a></li>
+                <li><a href="#{path}/raise/user/raiser/loanUnpublish">未发布项目</a></li>
+            </ul>
+        </div>
+        <h:form id="form">
+		<p:remoteCommand process="@this" immediate="true" name="clearPage" actionListener="#{raiseLoanList.setCurrentPage(1)}"></p:remoteCommand>
+        <f:event type="preRenderComponent" listener="#{raiseLoanList.example.user.setId(loginUserInfo.loginUserId)}"></f:event>
+        <f:event type="preRenderComponent" listener="#{raiseLoanList.addOrder('rl.commitTime','desc')}"></f:event>
+        <div class="ad-set-con main-birder fr">
+        <ui:fragment rendered="#{statistics.getRaiseLoanCountByUser(loginUserInfo.loginUserId) gt 0}">
+	     <div class="tab01-con">
+           	<div style="display:block">
+               	<div class="fq-tab-mene">
+					<h:commandLink value="全部" styleClass="select selected">
+						<f:ajax listener="#{raiseLoanList.example.setStatus('')}" render="dataTable"/>
+					</h:commandLink>
+					<h:commandLink value="准备中" styleClass="select">
+						<f:ajax listener="#{raiseLoanList.example.setStatus(RaiseLoanStatus.DRAFT)}" render="dataTable"/>
+					</h:commandLink>
+					<h:commandLink value="众筹中" styleClass="select">
+						<f:ajax listener="#{raiseLoanList.example.setStatus(RaiseLoanStatus.RAISING)}" render="dataTable"/>
+					</h:commandLink>
+					<h:commandLink value="已完成" styleClass="select">
+						<f:ajax listener="#{raiseLoanList.example.setStatus(RaiseLoanStatus.COMPLETE)}" render="dataTable"/>
+					</h:commandLink>
+                   </div>
+                   <div class="fq-tab-con">
+                   	<div>
+                   		<h:panelGroup id="dataTable" style="display:block;">
+                       	<table class="fq-qb-tb">
+                           	<tr><td>项目名称</td><td>发起日期</td><td>截止日期</td><td>目标</td><td>进度</td><td>状态</td></tr>
+                           	<ui:repeat var="raiseLoan" value="#{raiseLoanList.lazyModelData}">
+                               <tr>
+                               	<td>
+                               	<a href="#{path}/raise/loanDetail/#{raiseLoan.id}">
+                               		<img class="xm-pic" src="#{path}#{raiseLoan.photo}"/>
+                               		<span class="xm-name">#{raiseLoan.title}</span>
+                               		</a>
+                               	</td>
+                               	<td>
+                               		<h:outputText value="未发布" rendered="#{empty raiseLoan.verifyTime}"></h:outputText>
+                               		<h:outputText value="#{raiseLoan.verifyTime}" rendered="#{not empty raiseLoan.verifyTime}"><f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" /></h:outputText>
+                               	</td>
+                               	<td>
+                               		<h:outputText value="未发布" rendered="#{empty raiseLoan.verifyTime}"></h:outputText>
+                               		<h:outputText value="#{of:addDays(raiseLoan.verifyTime, raiseLoan.deadline)}" rendered="#{not empty raiseLoan.verifyTime}"><f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" /></h:outputText>
+                               	</td>
+                               	<td><h:outputText value="#{raiseLoan.money}"><f:convertNumber type="number" pattern="#,###" /></h:outputText></td>
+                               	<td>
+                               		<h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)}"><f:convertNumber type="number" pattern="#,###" /></h:outputText>元<br />
+                               		<h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)/raiseLoan.money}"><f:convertNumber type="number" pattern="#,###.##%" /></h:outputText>
+                               	</td>
+                               	<td>
+                               		#{dictUtil.getValue('raise_loan_status',raiseLoan.status)}<br />
+                               		<ui:fragment rendered="#{raiseLoan.status eq RaiseLoanStatus.DRAFT}">
+                                		<h:commandLink styleClass="zcol" action="#{raiseLoanHome.delete(raiseLoan.id)}" value="删除" onclick="return confirm('确定删除？')"></h:commandLink>
+                                		<label class="zcol">/</label>
+                                		<a class="zcol" href="#{path}/raise/loanEdit?id=#{raiseLoan.id}">编辑</a>
+                               		</ui:fragment>
+                               	</td>
+                               </tr>
+                               </ui:repeat>
+                           </table>
+                           <p class="zc-pagebar mg-top">
+                               <ui:include src="../loan-list-paging.xhtml"></ui:include>
+                           </p>
+                           </h:panelGroup>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           </ui:fragment>
+           <ui:fragment rendered="#{statistics.getRaiseLoanCountByUser(loginUserInfo.loginUserId) eq 0}">
+        	<img src="#{tplVars.themeImagePath}/raise/ad-pic.png"/>
+            <p class="xieyi"><input type="checkbox"/>阅读并同意众筹网<a href="#">《服务协议》</a><a href="#">《众筹公告》</a>
+            	<a class="edit to-publish" onclick="return toPublish()">去发布项目</a>
+            </p>
+            </ui:fragment>
+        </div>
+        </h:form>
+        <div class="clear"></div>
+    </div>
+</div>
+</ui:define>
+</ui:composition>

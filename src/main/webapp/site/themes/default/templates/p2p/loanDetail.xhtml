@@ -1,0 +1,281 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	<f:metadata>
+		<f:viewParam name="loanId" value="#{loanHome.id}"></f:viewParam>
+	</f:metadata>
+
+	<ui:define name="content">
+		<link type="text/css" rel="stylesheet"
+			href="#{tplVars.themeStylePath}/p2c.css" />
+		<link type="text/css" rel="stylesheet"
+			href="#{tplVars.themeStylePath}/p2p.css" />
+		<ui:param name="loan" value="#{loanHome.instance}"></ui:param>
+		<script>
+		//<![CDATA[
+		if (#{loanHome.instance.businessType eq '企业借款'}) {
+			window.location.href = "#{request.contextPath}/loan/#{loanHome.instance.id}";
+		}
+			//如果登录用户没有投资权限，则提示，并跳转页面。
+			function getInvestorPer() {
+				$.dialog
+						.confirm(
+								'您尚未进行实名认证无法投资，是否要实名认证？',
+								function() {
+									window.location.href = "#{request.contextPath}/user/get_investor_permission";
+									$.dialog.tips('正在为您跳转到页面');
+								});
+				return false;
+			}
+			//]]>
+		</script>
+		<div class="main">
+			<p class="titp">
+				<a class="prepage">我要理财</a>&gt;<a class="curpage">投资详情</a>
+			</p>
+			<div class="div01">
+				<p class="div01-p">#{loan.name}</p>
+				<div class="pro-top">
+					<div class="pro-top01 fl">
+						<p class="font14 co3e pad15">标的总额</p>
+						<p class="font24 co3e pad20">
+							￥:
+							<h:outputText value="#{loan.loanMoney}">
+								<f:convertNumber type="number" />
+							</h:outputText>
+						</p>
+						<p class="font14 co3e pad20">
+							发布时间：<h:outputText value="#{loan.commitTime}">
+								<f:convertDateTime pattern="yyyy-MM-dd" locale="cn"
+									timeZone="GMT+8"></f:convertDateTime>
+							</h:outputText>
+						</p>
+						<p class="font14 co3e pad20">还款方式：#{dictUtil.getValue('repay_type',loan.type.repayType)}</p>
+						<ui:param name="cr"
+							value="#{loanCalculator.calculateRaiseCompletedRate(loan.id)}"></ui:param>
+						<p class="font14 co3e">
+							投标进度：<em style="position: relative; top: 2px;"><b style="width:#{cr}%;"></b></em>#{cr}%
+						</p>
+					</div>
+					<div class="pro-top02 fl">
+						<p class="font14 co3e pad15">
+							<span>年利率</span><span>还款期限</span>
+						</p>
+						<p class="font24 co3e pad20">
+							<span><h:outputText value="#{loan.ratePercent}">
+									<f:convertNumber minFractionDigits="2" />
+								</h:outputText>%</span><span>#{loan.deadline*loan.type.repayTimePeriod}(#{dictUtil.getValue('repay_unit',loan.type.repayTimeUnit)})</span>
+						</p>
+						<p class="font14 co3e pad20">
+							最小投资金额：
+							<h:outputText value="#{loan.minInvestMoney}">
+								<f:convertNumber type="number" />
+							</h:outputText>
+							元
+						</p>
+						<p class="font14 co3e pad20">
+							递增金额：
+							<h:outputText value="#{loan.cardinalNumber}">
+								<f:convertNumber type="number" />
+							</h:outputText>
+							元
+						</p>
+						<p class="font14 co3e">剩余时间：#{loanCalculator.calculateRemainTime(loan.id)}</p>
+					</div>
+					<div class="pro-top03 fr">
+						<p class="font14 co3e">剩余金额</p>
+						<p class="font24 co3e">
+							￥：
+							<h:outputText
+								value="#{loanCalculator.calculateMoneyNeedRaised(loan.id)}">
+								<f:convertNumber type="number" />
+							</h:outputText>
+							（元）
+						</p>
+						<p>
+							<span class="co3e font14 fl">账户余额：<h:outputLabel
+									value="#{userBillHome.getBalanceByUserId(loginUserInfo.loginUserId)}">
+									<f:convertNumber />
+								</h:outputLabel>元
+							</span><a class="fr czbtn" href="#{path}/user/recharge">充值</a>
+						</p>
+						<h:form>
+							<ui:fragment rendered="#{loan.status ==LoanStatus.RAISING}">
+								<p class="inputp">
+									<h:inputText label="投资金额" value="#{investHome.instance.money}"
+										styleClass="txtinput" required="true"
+										requiredMessage="投资金额不能为空！">
+										<f:ajax event="blur" render="@this"></f:ajax>
+										<o:validator validatorId="javax.faces.DoubleRange"
+											minimum="#{loan.minInvestMoney}"
+											maximum="#{loanCalculator.calculateMoneyMaxInvested(loan.id)}"></o:validator>
+										<o:validator
+											validatorId="com.esoft.core.validator.NumberValidator"
+											cardinalNumber="#{loan.cardinalNumber}"></o:validator>
+									</h:inputText>
+									元
+								</p>
+								<p>
+									<ui:fragment rendered="#{empty loginUserInfo.loginUserId}">
+										<h:link outcome="pretty:memberLogin" styleClass="tb-btn">
+											<f:param name="spring-security-redirect"
+												value="/p2p_loan/#{loan.id}" />
+											<h:outputText value="立即投资"></h:outputText>
+										</h:link>
+									</ui:fragment>
+									<ui:fragment rendered="#{not empty loginUserInfo.loginUserId}">
+										<sec:ifNotGranted roles="INVESTOR">
+											<a class="tb-btn" href="javascript:void(0)"
+												onclick="getInvestorPer();">立即投资</a>
+										</sec:ifNotGranted>
+
+										<sec:ifAllGranted roles="INVESTOR">
+											<h:commandLink styleClass="tb-btn"
+												action="#{investHome.save}" value="立即投资"
+												onclick="return confirm('您确定要投资吗？');">
+												<f:setPropertyActionListener
+													target="#{investHome.instance.loan}" value="#{loan}"></f:setPropertyActionListener>
+											</h:commandLink>
+										</sec:ifAllGranted>
+									</ui:fragment>
+									<a href="#{path}/invest-calculator?money=#{loan.loanMoney}&amp;type=#{loan.type.id}&amp;rate=#{loan.ratePercent}&amp;deadline=#{loan.deadline}" target="_blank">
+									<img style="cursor: pointer; width: 36px; margin-left: 13px; margin-top: 12px;" src="#{tplVars.themeImagePath}/p2c_img14.png" />
+								</a>
+								</p>
+							</ui:fragment>
+						</h:form>
+						<ui:fragment rendered="#{loan.status !=LoanStatus.RAISING}">
+							<p>
+								投资人数：<span>#{loanCalculator.countSuccessInvest(loan.id)}</span>人投资此项目<br />项目状态：#{dictUtil.getValue('loan',loan.status)}
+							</p>
+						</ui:fragment>
+					</div>
+					<div class="clear"></div>
+				</div>
+
+			</div>
+			<div style="height:84px;">
+				<div class="tabs map">
+					<span id="descriptionBtn" class="tab1 currenttab" onclick="scrollToPosition('description')">标的详情</span> 
+					<span id="investsBtn" class="tab2" onclick="scrollToPosition('invests')">投标记录</span> 
+				</div>
+			</div>
+			<div class="tab-content">
+				<span id="description" class="title">项目描述</span>
+				<div class="list_loan-detail">
+					<h:outputText value="#{loan.description}" escape="false"></h:outputText>
+				</div>
+			</div>
+			<div class="tab-content">
+				<span id="invests" class="title">投资记录</span>
+				<h:form id="investsForm" style="margin-top: 20px;">
+					<table width="1000" border="0" cellspacing="0" cellpadding="0"
+						class="p2c_tab">
+						<tr class="p2c_tab_tr">
+							<td width="140" align="center">投资人</td>
+							<td width="380" align="center">投资金额</td>
+							<td width="378" align="center">投资时间</td>
+							<td width="102" align="center">状态</td>
+						</tr>
+						<f:event type="preRenderComponent"
+							listener="#{investList.example.loan.setId(loan.id)}"></f:event>
+						<f:event type="preRenderComponent"
+							listener="#{investList.addOrder('invest.time','desc')}"></f:event>
+							<f:event type="preRenderComponent"
+									listener="#{investList.setPageSize(10)}"></f:event>
+						<ui:repeat var="invest" value="#{investList.lazyModelData}">
+							<tr>
+								<td align="center">#{invest.user.username.substring(0,3)}***</td>
+								<td align="center"><h:outputText
+										value="#{invest.investMoney}">
+										<f:convertNumber maxFractionDigits="2" />
+									</h:outputText>元</td>
+								<td align="center"><h:outputText value="#{invest.time}">
+										<f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" locale="cn"
+											timeZone="GMT+8"></f:convertDateTime>
+									</h:outputText></td>
+								<td align="center">#{dictUtil.getValue('invest_status',
+									invest.status)}</td>
+							</tr>
+						</ui:repeat>
+					</table>
+					<div class="pagebar">
+						<ui:include
+							src="#{tplVars.componentsPath}/loan-list_invests-paging_include.xhtml"></ui:include>
+					</div>
+					<div class="clear"></div>
+				</h:form>
+			</div>
+			
+		</div>
+		<script>
+			//<![CDATA[
+			jQuery(".img-scroll").slide({
+				mainCell : ".bd div",
+				autoPage : true,
+				effect : "left",
+				autoPlay : true,
+				vis : 4
+			});
+
+			var $map = $(".map");
+			var $guaranteeInfoPics = $("#invests");
+			var floatHeight = $map.offset().top;
+			var guaranteeInfoPicsHeight = $guaranteeInfoPics.offset().top
+					+ $guaranteeInfoPics.height() - $map.height();
+			function tools() {
+				var top = $(document).scrollTop();
+				if (top > floatHeight && top < guaranteeInfoPicsHeight)
+					$map.css({
+						position : "fixed",
+						top:0
+						//top : $(document).scrollTop() - floatHeight
+					});
+				if (top <= floatHeight)
+					$map.css({
+						position : "static",
+						top : 0
+					});
+				if (top >= guaranteeInfoPicsHeight)
+					$map.css({
+						position : "static",
+						top : guaranteeInfoPicsHeight
+					});
+
+				$(".map span").removeClass("currenttab");
+				if (top >= $("#invests").offset().top - $map.height()) {
+					$("#investsBtn").addClass("currenttab");
+				} else {
+					$("#descriptionBtn").addClass("currenttab");
+				}
+			}
+			window.onload = tools;
+			window.onscroll = tools;
+			window.onresize = tools;
+
+			function scrollToPosition(id) {
+				var h = $("#" + id).offset().top - $map.height();
+				$('html, body').animate({
+					scrollTop : h
+				}, 300);
+			}
+
+			function afterMessageSubmit(xhr, status, args) {
+				if (!args.validationFailed) {
+					nextVerifyCode();
+					$('#commentForm\\:commentBody').val('');
+				}
+				$('#commentForm\\:captcha').val('');
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>

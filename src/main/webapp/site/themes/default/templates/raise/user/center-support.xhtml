@@ -1,0 +1,120 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+	<ui:include src="userCenterTop.xhtml"></ui:include>
+	<script>
+		$(function(){
+			$(".invest-operation-payback, .invest-operation-address").hover(function(){
+				$(this).next().toggle();
+			});
+		});
+	</script>
+	<!---->
+	<!--header end-->
+	<!--central begin-->
+	<div class="wrapper-central">
+		<p class="tip-tit">我的项目</p>
+	    <div class="central-01">
+	    	<div class="central-01-tab">
+	        	<div class="tab01-menu">
+	            	<ul class="clear">
+	                	<li class="font18" onclick="location.href='#{path}/raise/user/center'">我发起的<span class="font12 colorff mine-count">10</span></li>
+	                    <li class="font18" onclick="location.href='#{path}/raise/user/centerLike'">我喜欢的<span class="font12 colorff like-count">22</span></li>
+	                    <li class="font18 current-tab">我支持的<span class="font12 colorff support-count">24</span></li>
+	                </ul>
+	                <div class="bor-line"></div>
+	            </div>
+	            <h:form id="form">
+	            <p:remoteCommand process="@this" immediate="true" name="clearPage" actionListener="#{raiseLoanList.setCurrentPage(1)}"></p:remoteCommand>
+	            <f:event type="preRenderComponent" listener="#{raiseInvestList.example.user.setId(loginUserInfo.loginUserId)}"></f:event>
+<!-- 	            <ui:param name="restriction" value="#{'(ri.status=\''}#{RaiseInvestStatus.RAISING}#{'\' or ri.status=\''}#{RaiseInvestStatus.COMPLETE}#{''}#{'\' or ri.status=\''}#{RaiseInvestStatus.RECHECK}#{'\' or ri.status=\''}#{RaiseInvestStatus.REPAYING}#{'\')'}"></ui:param> -->
+<!-- 				<f:event type="preRenderComponent" listener="#{raiseInvestList.addRestriction(restriction)}"></f:event> -->
+	            <f:event type="preRenderComponent" listener="#{raiseInvestList.addOrder('ri.time','desc')}"></f:event>
+	            <div class="tab01-con">
+	                <div>
+<!-- 	                	<div class="zc-tab-mene"> -->
+<!-- 	                    	<ul class="clear"> -->
+<!-- 	                        	<li class="current-zc-con">全部</li> -->
+<!-- 	                            <li>已支付</li> -->
+<!-- 	                            <li>未支付</li> -->
+<!-- 	                        </ul> -->
+<!-- 	                    </div> -->
+	                    <div class="zc-tab-con">
+	                    	<div style="display:block">
+	                    		<h:panelGroup id="dataTable" style="display:block;">
+	                        	<table class="zc-qb-tb">
+	                        		<colgroup>
+	                        			<col width="101"/>
+	                        			<col width="74"/>
+	                        			<col width="59"/>
+	                        			<col width="57"/>
+	                        			<col width="52"/>
+	                        		</colgroup>
+	                            	<tr><td>项目名称</td><td>支持日期</td><td>支持金额</td><td>项目状态</td><td>操作</td></tr>
+	                            	<ui:repeat var="raiseInvest" value="#{raiseInvestList.lazyModelData}">
+	                            	<ui:param name="payback" value="#{raiseInvest.payback}"></ui:param>
+	                            	<ui:param name="raiseLoan" value="#{payback.loan}"></ui:param>
+	                                <tr>
+	                                	<td>
+	                                		<a href="#{path}/raise/loanDetail/#{raiseLoan.id}">
+		                                		<img class="xm-pic" src="#{path}#{raiseLoan.photo}"/>
+		                                		<span class="xm-name">#{raiseLoan.title}</span>
+	                                		</a>
+	                                	</td>
+	                                	<td>
+	                                		<h:outputText value="#{raiseInvest.time}">
+	                                			<f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" />
+	                                		</h:outputText>
+	                                	</td>
+	                                	<td><h:outputText value="#{raiseInvest.money}"><f:convertNumber type="number" pattern="#,###" /></h:outputText></td>
+	                                	<td>#{dictUtil.getValue('raise_loan_status',raiseLoan.status)}</td>
+	                                	<td>
+	                                		<div class="center-invest-operation">
+		                                		<span class="invest-operation-payback">回报内容</span>
+		                                		<div class="cio-payback">
+		                                			<p>#{payback.title}</p>
+		                                			<div>#{payback.description}</div>
+		                                		</div>
+		                                		<ui:fragment rendered="#{payback.money gt 0}">
+		                                			<span class="invest-operation-address">回报地址</span>
+		                                			<div class="cio-address">
+		                                				<p>#{raiseInvest.shipAddress.name}</p>
+		                                				<div>
+		                                					#{raiseInvest.shipAddress.mobile}<br/>
+		                                					#{raiseInvest.shipAddress.area.parent.name}&#160;#{raiseInvest.shipAddress.area.name}&#160;
+		                                					#{raiseInvest.shipAddress.address}
+		                                				</div>
+		                                			</div>
+		                                		</ui:fragment>
+	                                		</div>
+	                                	</td>
+	                                </tr>
+	                                </ui:repeat>
+	                            </table>
+	                            <p class="zc-pagebar mg-top">
+	                                <ui:include src="../invest-list-paging.xhtml"></ui:include>
+	                            </p>
+	                            </h:panelGroup>
+	                        </div>
+	                        <div style="display:none">已支付</div>
+	                        <div style="display:none">未支付</div>
+	                    </div>
+	                </div>
+	            </div>
+	            </h:form>
+	        </div>
+	    </div>
+	</div>
+</ui:define>
+</ui:composition>

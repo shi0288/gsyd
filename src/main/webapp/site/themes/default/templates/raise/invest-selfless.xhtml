@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+<f:metadata>
+	<f:viewParam name="id" value="#{raisePaybackHome.id}"></f:viewParam>
+</f:metadata>
+<ui:define name="content">
+<ui:param name="payback" value="#{raisePaybackHome.instance}"></ui:param>
+<ui:param name="raiseLoan" value="#{payback.loan}"></ui:param>
+<f:event type="preRenderComponent" listener="#{raiseInvestHome.instance.setPayback(payback)}"></f:event>
+<script>
+	//<![CDATA[
+		function compareMoney(){
+			if(parseFloat($("#have-money").val()) < parseFloat($("#need-money").html())){
+				$.dialog.alert('余额不足，请先充值',
+				function() {
+					
+				});
+				return false;
+			}
+			return true;
+		}
+		function rechargeDialog(){
+			setTimeout(function(){
+			$.dialog.confirm('充值完成？',
+				function() {
+					location.reload(true);
+				});
+			}, 500);
+		}
+		
+		$(function(){
+			$(".more").click(function(){
+				if($(this).html()=="显示全部"){
+					$(".morecon").css("height","auto");
+					$(this).html("收起");
+				} else if($(this).html()=="收起"){
+					$(".morecon").css("height",56);
+					$(this).html("显示全部");
+				}
+				
+			});
+		});
+//]]>
+</script>
+<div class="wrapper-central">
+<h:form id="form">
+	<div class="confirm-box ztmain cm-border">
+        <div class="pay-detail">
+            <div class="pay-tit"> 
+                <h3>确认支持详情</h3>
+            </div>
+            <div class="supdtl">
+              <div class="supdtl-head">
+                <span class="pos1">项目名称</span>
+                <span class="pos2">回报内容</span>
+                <span class="pos3" style="width:251px;text-align:center">支持金额</span>
+              </div>
+              <div class="supdtl-cont">
+                <div class="supdtl-cont-top">
+                  <span class="pos1">
+                  	<a href="#{path}/raise/loanDetail/#{raiseLoan.id}" target="_blank">
+                  	<img src="#{path}#{raiseLoan.photo}" alt="#{raiseLoan.title}"/></a>
+                  	<span>
+                  		<a href="#{path}/raise/loanDetail/#{raiseLoan.id}" target="_blank" class="color00">#{raiseLoan.title}</a>
+                  	</span>
+                  </span>
+                  <span class="pos2">
+                  	<span class="morecon">#{payback.title}：<br/>
+                  		#{payback.description}</span>
+                  	<span class="more">显示全部</span>
+                  </span>
+                  <span class="pos3" style="width:251px;margin-top:25px;">
+                  	<h:inputText value="#{raiseInvestHome.instance.money}" styleClass="selfless-money" id="selflessMoney" required="true" label="支持金额">
+                  		<o:validator validatorId="javax.faces.DoubleRange" minimum="0.1"></o:validator>
+                  	</h:inputText>
+                  	<p:watermark value="请输入支持金额" for="selflessMoney"></p:watermark>
+                  </span>
+                  
+                </div>
+                <div class="supdtl-cont-bot">给项目发起人留言
+                	<h:inputText value="#{raiseInvestHome.instance.message}" maxlength="400"></h:inputText>
+                </div>
+              </div>
+            </div> 
+            
+            <div class="pay-submit">
+				<div>账户余额：<span>
+					<h:outputText value="#{billStatistics.getBalanceByUserId(loginUserInfo.loginUserId)}">
+						<f:convertNumber type="currency" />
+					</h:outputText>
+					<input id="have-money" value="#{billStatistics.getBalanceByUserId(loginUserInfo.loginUserId)}" type="hidden"></input>
+				</span><a href="#{path}/raise/user/recharge" class="recharge" target="_blank" onclick="rechargeDialog()">充值</a></div>
+<!-- 				<div>总计金额：<span>￥<label id="need-money">#{payback.money}</label></span></div> -->
+				<f:event type="preRenderComponent" listener="#{facesUtil.setSessionAttribute('returnPage','pretty:raiseUserCenter')}"></f:event>
+         		<h:commandButton styleClass="btn-effect-blue btn-sub w217" value="确认付款" action="#{raiseInvestHome.buy}" onclick="return compareMoney()"></h:commandButton>
+        	</div>   
+    </div>
+    </div>
+ </h:form>   
+</div>
+</ui:define>
+</ui:composition>

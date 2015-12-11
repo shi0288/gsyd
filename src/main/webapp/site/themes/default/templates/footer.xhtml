@@ -1,0 +1,49 @@
+<ui:component xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:sec="http://www.springframework.org/security/facelets/tags">
+
+	<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/footer.css" />
+
+	<div class="footer">
+		<div class="footer-con main-w clearfix">
+			<div class="ft-l fl">
+				<img src="#{tplVars.themeImagePath}/index/ft-logo.png" />
+				<p>
+					客服电话<br/>
+					<span>#{configHome.getConfigValue("site_phone")}</span>
+				</p>
+			</div>
+			<div class="ft-c fl clearfix">
+
+				<ui:repeat var="menu" value="#{menuList.getNavigationMenus()}" varStatus="status">
+					<ui:fragment rendered="#{menu.enable eq '1' and menu.seqNum lt 4}">
+						<ul>
+							<li><a href="#{path}#{menu.url}">#{menu.label}</a></li>
+							<ui:repeat var="m2" value="#{menu.children}">
+								<ui:fragment rendered="#{m2.enable eq '1'}">
+									<li><a href="#{path}#{m2.url}">#{stringHome.ellipsis(m2.label,10)}</a></li>
+								</ui:fragment>
+							</ui:repeat>
+						</ul>
+					</ui:fragment>
+				</ui:repeat>
+			</div>
+			<div class="ft-r fr clearfix">
+				<ul class="ft-r1">
+					<li><a href="#"><i class="sm-icon"></i>iphone</a></li>
+					<li><a href="#"><i class="sm-icon"></i>Android</a></li>
+					<li><a href="#">点击访问手机版</a></li>
+				</ul>
+				<ul class="ft-r2">
+					<li><a href="#">扫描下载客户端</a></li>
+					<li><a href="#"><img src="#{tplVars.themeImagePath}/index/ft-wx.png" /></a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="footer2">
+			<p class="copy main-w">
+				版权所有 国商信联财富投资管理（北京）有限公司 备案号 京ICP备13047353号-1 <br />Copyright©GUOSHANGXINLIANCAIFUTOUZIGUANLI,LTD.All Rights Reserved
+			</p>
+		</div>
+	</div>
+
+</ui:component>

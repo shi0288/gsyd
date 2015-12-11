@@ -1,0 +1,167 @@
+<ui:component xmlns:c="http://java.sun.com/jsp/jtl/core" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:sec="http://www.springframework.org/security/facelets/tags">	
+
+	<script type="text/javascript">
+		/*圆形百分比*/
+		var paper = null;
+		function init(b, n, t, c) {
+			//初始化Raphael画布 
+			this.paper = Raphael(b, 52, 52);
+
+			//把底图先画上去 
+			this.paper.image("#{tplVars.themeImagePath}/index/progressBg.png",
+					0, 0, 52, 52);
+
+			//进度比例，0到1，在本例中我们画65% 
+			//需要注意，下面的算法不支持画100%，要按99.99%来画 
+			var percent = n, drawPercent = percent >= 1 ? 0.9999 : percent;
+
+			//开始计算各点的位置，见后图 
+			//r1是内圆半径，r2是外圆半径 
+			var r1 = 22, r2 = 25, PI = Math.PI, p1 = {
+				x : 25,
+				y : 50
+			}, p4 = {
+				x : p1.x,
+				y : p1.y - r2 + r1
+			}, p2 = {
+				x : p1.x + r2 * Math.sin(2 * PI * (1 - drawPercent)),
+				y : p1.y - r2 + r2 * Math.cos(2 * PI * (1 - drawPercent))
+			}, p3 = {
+				x : p4.x + r1 * Math.sin(2 * PI * (1 - drawPercent)),
+				y : p4.y - r1 + r1 * Math.cos(2 * PI * (1 - drawPercent))
+			}, path = [ 'M', p1.x, ' ', p1.y, 'A', r2, ' ', r2, ' 0 ',
+					percent > 0.5 ? 1 : 0, ' 1 ', p2.x, ' ', p2.y, 'L', p3.x,
+					' ', p3.y, 'A', r1, ' ', r1, ' 0 ', percent > 0.5 ? 1 : 0,
+					' 0 ', p4.x, ' ', p4.y, 'Z' ].join('');
+
+			//用path方法画图形，由两段圆弧和两条直线组成，画弧线的算法见后 
+			this.paper.path(path)
+			//填充渐变色，从#3f0b3f到#ff66ff 
+			.attr({
+				"stroke-width" : 0.5,
+				"stroke" : "#d2d4d8",
+				"fill" : "90-" + c
+			});
+			//显示进度文字 
+			$(t).text(Math.round(percent * 100) + "%");
+		}
+	</script>
+
+	<!--part1 end-->
+	<div class="part2">
+		<div class="main-w clearfix">
+
+			<ui:param name="restriction_recommend"
+				value="#{' attr.id =\'recommend\''}#{' and (loan.status=\''}#{LoanStatus.RAISING}#{'\' or loan.status=\''}#{LoanStatus.COMPLETE}#{''}#{'\' or loan.status=\''}#{LoanStatus.RECHECK}#{'\' or loan.status=\''}#{LoanStatus.REPAYING}#{'\')'}"></ui:param>
+			<f:event type="preRenderComponent" listener="#{loanList2.addRestriction(restriction_recommend)}"></f:event>
+			<f:event type="preRenderComponent" listener="#{loanList2.setPageSize(1)}"></f:event>
+			<f:event type="preRenderComponent" listener="#{loanList2.addOrder('loan.commitTime','desc')}"></f:event>
+			<ui:repeat var="loan2" value="#{loanList2.lazyModelData}" varStatus='i'>
+
+				<div class="part2-l fl clearfix">
+
+					<div class="fl">
+						<img style="width:116px;height:116px;" src="#{path}#{loan2.customPicture}" alt="" />
+					</div>
+					<div class="fl">
+						<a href="#{path}/loan/#{loan2.id}"><h4>#{fn:substring(loan2.name,0,25)}</h4></a> <i class="jian"><img src="#{tplVars.themeImagePath}/index/jian.png" alt="" /></i>
+						<ul class="clearfix">
+							<ui:param name="cr" value="#{loanCalculator.calculateRaiseCompletedRate(loan2.id)}"></ui:param>
+							<li class="fl"><span>年化利率：<em><h:outputText value="#{loan2.rate*100}">
+										<f:convertNumber minFractionDigits="1" />
+									</h:outputText></em>%
+							</span> <span>借款期限：<em>#{loan2.deadline}</em>#{dictUtil.getValue('repay_unit',loan2.type.repayTimeUnit)}
+							</span><br /> <span>借款金额：￥<h:outputText value="#{loan2.loanMoney/10000}">
+										<f:convertNumber minFractionDigits="2" />
+									</h:outputText>万元
+							</span> <span>可投金额：<em><h:outputText value="#{(loan2.loanMoney-(loan2.loanMoney*(cr/100)))/10000}">
+											<f:convertNumber minFractionDigits="3" />
+										</h:outputText></em>万元
+							</span></li>
+							<li class="part2-jd fl">
+								<div class="percentBox">
+									<div id="bg1"></div>
+									<!--<em>投资进度</em>
+                 承载进度文字 -->
+									<div id="txt1" class="pertxt"></div>
+								</div>
+							</li>
+							<li class="part2-btn fr"><ui:fragment rendered="#{loan2.status ==LoanStatus.RAISING}">
+									<a class="indexa" href="#{path}/loan/#{loan2.id}">立即投资</a>
+								</ui:fragment> <ui:fragment rendered="#{loan2.status !=LoanStatus.RAISING}">
+									<a class="indexa" href="#{path}/loan/#{loan2.id}">#{dictUtil.getValue('LOAN',loan2.status)}</a>
+								</ui:fragment></li>
+						</ul>
+						<script type="text/javascript">
+							//六个进度条对应的值
+							init('bg1', #{cr/100}, '#txt1', '#E85F69');
+						</script>
+						
+					</div>
+				</div>
+			</ui:repeat>
+
+			<ui:include src="indexStatistics.xhtml"></ui:include>
+		</div>
+	</div>
+	<!--part2 end-->
+	<div class="part3">
+		<div class="main-w">
+			<h4 class="titl clearfix">
+				<p class="fl">
+					投资项目<span>我们正在努力审核项目。</span>
+				</p>
+				<p class="fr">
+					<a href="#{path}/loan-list">更多></a>
+				</p>
+			</h4>
+			<div class="clearfix">
+
+				<ui:param name="restriction"
+					value="#{' attr.id =\'index\''}#{' and (loan.status=\''}#{LoanStatus.RAISING}#{'\' or loan.status=\''}#{LoanStatus.COMPLETE}#{''}#{'\' or loan.status=\''}#{LoanStatus.RECHECK}#{'\' or loan.status=\''}#{LoanStatus.REPAYING}#{'\')'}"></ui:param>
+				<f:event type="preRenderComponent" listener="#{loanList.addRestriction(restriction_recommend)}"></f:event>
+				<f:event type="preRenderComponent" listener="#{loanList.setPageSize(4)}"></f:event>
+				<f:event type="preRenderComponent" listener="#{loanList.addOrder('loan.commitTime','desc')}"></f:event>
+				<ui:repeat var="loan" value="#{loanList.lazyModelData}" varStatus='i'>
+					<div class="part3-in">
+						<div class="part3-top">
+							<p>
+								<i class="sm-icon">车</i> 分期乐<span>|</span>#{loan.type.name}
+							</p>
+							<a class="indexa" href="#{path}/loan/#{loan.id}"><h4>#{fn:substring(loan.name,0,24)}</h4></a>
+						</div>
+						<ul>
+							<li><em><h:outputText value="#{loan.rate*100}">
+										<f:convertNumber minFractionDigits="1" />
+									</h:outputText>%</em><span>年化收益</span></li>
+							<li><em>#{loan.deadline}</em>#{dictUtil.getValue('repay_unit',loan.type.repayTimeUnit)}<span>项目期限</span></li>
+							<ui:param name="cr" value="#{loanCalculator.calculateRaiseCompletedRate(loan.id)}"></ui:param>
+							<li>融资金额<span><h:outputText value="#{loan.loanMoney}">
+										<f:convertNumber minFractionDigits="0" />
+									</h:outputText>元</span></li>
+							<li>剩余金额<span><h:outputText value="#{(loan.loanMoney-(loan.loanMoney*(cr/100)))}">
+										<f:convertNumber minFractionDigits="0" />
+									</h:outputText>元</span></li>
+							<li class="part3-jd">
+								<p class="jd">
+									<b style="width: #{cr}%"></b>
+								</p>
+								<p class="clearfix">
+									<span class="fl">融资进度</span><span class="fr">#{cr}%</span>
+								</p>
+							</li>
+							<li class="part3-btn"><ui:fragment rendered="#{loan.status ==LoanStatus.RAISING}">
+									<a class="indexa" href="#{path}/loan/#{loan.id}">立即购买</a>
+								</ui:fragment> <ui:fragment rendered="#{loan.status !=LoanStatus.RAISING}">
+									<a class="indexa" href="#{path}/loan/#{loan.id}">#{dictUtil.getValue('LOAN',loan.status)}</a>
+								</ui:fragment></li>
+						</ul>
+					</div>
+				</ui:repeat>
+			</div>
+		</div>
+	</div>
+
+
+</ui:component>

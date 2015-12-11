@@ -1,0 +1,65 @@
+<ui:component xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+
+		<!-- 项目详情投资记录框  -->
+			<div class="invest-record">
+				<h3>
+					<i class="tzjl"></i>投资记录
+				</h3>
+				<h:form id="investsForm">
+					<div class="multipleLine" style="margin:0 auto">
+						<div class="bd">
+							<div class="ulWrap">
+								<f:event type="preRenderComponent"
+									listener="#{investList.example.loan.setId(loan.id)}"></f:event>
+								<f:event type="preRenderComponent"
+									listener="#{investList.addOrder('invest.time','desc')}"></f:event>
+								<ul>
+									<ui:repeat var="invest" value="#{investList.lazyModelData}" varStatus="status">
+										<ui:fragment rendered="#{status.index/8 eq 1}">
+											<h:outputText value="&lt;/ul> &lt;ul>" escape="false"></h:outputText>
+										</ui:fragment>
+											<li>
+												<span>#{invest.user.username.substring(0,3)}***</span> 
+												<span>
+													<h:outputText value="#{invest.investMoney}">
+														<f:convertNumber type="number"/>
+													</h:outputText>
+												</span> 
+												<span>
+													<h:outputText value="#{invest.time}">
+														<f:convertDateTime pattern="yyyy-MM-dd" locale="cn" timeZone="GMT+8"></f:convertDateTime>
+													</h:outputText>
+												</span>
+											</li>
+									</ui:repeat>
+								</ul>
+							</div>
+							<!-- ulWrap End -->
+						</div>
+						<!-- bd End -->
+						<div class="hd">
+							<a class="next"></a> <a class="prev"></a>
+						</div>
+					</div>
+				</h:form>
+				<!-- multipleLine End -->
+				<script type="text/javascript">
+					
+					/*
+						多行/多列的滚动解决思路在于：把每次滚动的n个li放到1个ul里面，然后用SuperSlide每次滚动1个ul，相当于每次滚动n个li
+					 */
+					jQuery(".multipleLine").slide({
+						titCell : ".hd ul",
+						mainCell : ".bd .ulWrap",
+						autoPage : true,
+						effect : "left",
+						autoPlay : true
+					});
+				</script>
+			</div>
+</ui:component>

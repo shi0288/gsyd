@@ -1,0 +1,27 @@
+<ui:component xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+
+	<div id="slideBox" class="slideBox">
+	    <div class="bd">
+	        <ul>
+	        	<ui:repeat var="pic" value="#{bannerList.getBannerById('index_raise').pictures}">
+	            	<li><a href="#{path}#{pic.url}'"><img src="#{path}#{pic.picture}" /></a></li>
+	        	</ui:repeat>
+	        </ul>
+	    </div>
+	    <div class="hd">
+	        <ul><ui:repeat var="pic" value="#{bannerList.getBannerById('index_raise').pictures}"><li></li></ui:repeat></ul>
+	    </div>
+	</div>
+	<script id="jsID" type="text/javascript">
+	//<![CDATA[
+			 var ary = location.href.split("&");
+			jQuery(".slideBox").slide( { mainCell:".bd ul", effect:ary[1],autoPlay:true,trigger:ary[2],easing:ary[4],delayTime:ary[5],mouseOverStop:ary[6],pnLoop:ary[7] });
+	//]]>
+	</script>
+</ui:component>

@@ -1,0 +1,126 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+<f:metadata>
+		<f:viewParam name="loanId" value="#{raiseLoanHome.id}"></f:viewParam>
+	</f:metadata>
+<ui:define name="content">
+<ui:param name="raiseLoan" value="#{raiseLoanHome.instance}"></ui:param>
+<ui:fragment rendered="#{not empty raiseLoanHome.instance.user.id and raiseLoanHome.instance.user.id eq loginUserInfo.loginUserId and (raiseLoan.status eq RaiseLoanStatus.DRAFT or raiseLoan.status eq RaiseLoanStatus.VERIFY_FAIL)}">
+	<ui:param name="user" value="#{raiseLoanHome.instance.user}"></ui:param>
+	<div class="wrapper-central">
+		<div class="flow-chart clear">
+	    	<div class="bz bz-01 fl">
+	        	<i class="bz-i-01"></i>
+	        </div>
+	        <div class="bz bz-02 fl">
+	            <i class="bz-i-02"></i>
+	        </div>
+	        <div class="bz bz-03 fl">
+	            <i class="bz-i-03"></i>
+	        </div>
+	        <div class="bz bz-04 fr">
+	            <i class=""></i>
+	        </div>
+	    </div>
+	    <div class="ztmain bz-font">
+	    	<span class="font16 bz-fon01">1.填写项目信息</span>
+	        <span class="font16 bz-fon02">2.设置回报</span>
+	        <span class="font16 bz-fon03">3.填写发布人信息</span>
+	        <span class="font16 bz-fon04">4.等待审核</span>
+	    </div>
+	    <h:form>
+		    <div class="info-center ztmain clear">
+		        <p class="info-title">发起人信息</p>
+		        <div class="fl fqr-div">
+		        	<div class="item clear">
+		            	<div class="item-tit fl font16">
+		                	真实姓名：
+		                </div>
+		                <div class="item-con fr">
+		                	<h:inputText value="#{user.realname}" styleClass="fo-inp input-p-n cm-border" required="true" label="真实姓名" maxlength="20"></h:inputText>
+		                </div>
+		            </div>
+		            <div class="item clear">
+		            	<div class="item-tit fl font16">
+		                	所在地：
+		                </div>
+		                <div class="item-con fr">
+		                    <f:event listener="#{areaHome.initByCity(user.area)}" type="preRenderComponent" />
+							<h:selectOneMenu  styleClass="cm-border" value="#{areaHome.selectedProvince}" converter="archer.EntityConverter"  >
+								<f:selectItems value="#{areaHome.allProvinces}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+								<f:ajax listener="#{areaHome.findAllCities}" render="jobareaSelect"></f:ajax>
+							</h:selectOneMenu>
+							<h:panelGroup id="jobareaSelect" >
+								<h:selectOneMenu  value="#{user.area}" converter="archer.EntityConverter" styleClass="cm-border" rendered="#{not empty areaHome.allCities}">
+									<f:selectItems value="#{areaHome.allCities}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+								</h:selectOneMenu>
+							</h:panelGroup>
+		                </div>
+		            </div>	
+		            <div class="item clear">
+		            	<div class="item-tit fl font16">
+		                	移动电话：
+		                </div>
+		                <div class="item-con fr">
+								<h:outputText value="#{user.mobileNumber}" style="height:40px;line-height:40px;"></h:outputText>
+		                </div>
+		            </div>
+		            <!-- 
+		            <p class="zjhb-tit">补充打款信息</p>
+		            <div class="item clear">
+		            	<div class="item-tit fl font16">
+		                	银行名称：
+		                </div>
+		                <div class="item-con fr">
+		                	<h:selectOneMenu value="#{raiseLoanHome.bc.bankNo}" style="width:150px;"
+								styleClass="date_select date_select03">
+								<f:selectItems value="#{rechargeList.rechargeBankCards}" var="bc" 
+									itemLabel="#{bc.bankName}" itemValue="#{bc.no}" />
+							</h:selectOneMenu>
+		                </div>
+		            </div>
+		            <div class="item clear">
+		            	<div class="item-tit fl font16">
+		                	开户支行：
+		                </div>
+		                <div class="item-con fr">
+		                	<h:inputText value="#{raiseLoanHome.bc.name}" maxlength="100" required="true" label="开户支行" styleClass="fo-inp input-p-n cm-border"></h:inputText>
+		                </div>
+		            </div>
+		            <div class="item clear">
+		            	<div class="item-tit fl font16">
+		                	银行账号：
+		                </div>
+		                <div class="item-con fr">
+		                	<h:inputText value="#{raiseLoanHome.bc.cardNo}" onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="40"
+		                		 styleClass="fo-inp input-p-n cm-border" required="true" label="银行账号"></h:inputText>
+		                </div>
+		            </div>
+		             -->
+		        </div>
+		        <div class="fl warm-tip">
+		        	<p class="font18">温馨提醒</p>
+		            <p>&#160;</p>
+		            <p class="p-fc">请仔细填写该页信息，确保能及时和您取得联系</p>
+		        </div>
+		        <div class="clear"></div>
+		        <div class="mar-left mar-top50">
+		        	<a href="javascript:void(0)" class="pre-nex-btn add-b-h" onclick="history.back()">上一步</a>
+		            <h:commandLink action="#{raiseLoanHome.commit('')}" styleClass="pre-nex-btn add-b-h" value="保存草稿"></h:commandLink>
+		            <h:commandLink action="#{raiseLoanHome.commit(RaiseLoanStatus.WAITING_VERIFY)}" styleClass="pre-nex-btn add-b-h" value="提交审核"></h:commandLink>
+		        </div>
+		    </div>
+	    </h:form>
+	</div>
+</ui:fragment>
+</ui:define>
+</ui:composition>

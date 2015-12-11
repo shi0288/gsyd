@@ -1,0 +1,121 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<ui:composition template="/admin/templates/ui.xhtml">
+<ui:define name="content">
+ <!-- 特殊属性[自动解锁时间] -->
+ <ui:param name="specialProperty" value="user_safe.user_disable_time"></ui:param>
+ <!-- 配置信息类别 -->
+ <ui:param name="configType" value="user_safe"></ui:param>
+ <!-- 提前处理操作 -->
+ <f:event type="preRenderComponent" listener="#{userSafeConfigHome.setConfigType(configType)}"></f:event>
+ <f:event type="preRenderComponent" listener="#{userSafeConfigHome.setSpecialProperty(specialProperty)}"></f:event>	 
+ <f:event type="preRenderComponent" listener="#{userSafeConfigHome.configDetail()}"></f:event>	 
+ <script type="text/javascript">
+    //<![CDATA[
+       $(function(){
+	              var days_time = '#{days_time}';
+	              var hours_time = '#{hours_time}';
+	              var mins_time = '#{mins_time}';
+	              var cons_time = '#{cons_time}';
+	              $("#days_time").val(days_time);
+	              $("#hours_time").val(hours_time);
+	              $("#mins_time").val(mins_time);
+	              $("#cons_time").val(cons_time);
+               });
+     //]]>
+  </script>
+		<div class="entry">
+			<p:toolbar styleClass="admin-nav-toolbar">
+				<p:toolbarGroup>
+					<h:outputLabel
+						value="#{commonMsg.currentPositionLabel} 用户安全配置信息"></h:outputLabel>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:separator />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:spacer></p:spacer>
+			<h:form>
+				<h:panelGroup id="panel">
+					<table>
+						<ui:repeat value="#{userSafeConfigHome.configs}" var="c">
+						<h:inputHidden value="#{c.id}"></h:inputHidden>
+							<tr>
+								<td class="col1"><h:outputLabel value="#{c.name}"></h:outputLabel>
+								</td>
+								<td class="col2"><h:inputText value="#{c.value}" style="width:220px;"></h:inputText>
+								</td>
+								<td><h:outputText value="#{c.description}"></h:outputText></td>
+							</tr>
+						</ui:repeat>
+						<tr>
+								<td class="col1">解锁时间:</td>
+								<td class="col2">
+								    <SELECT name="days_time" id="days_time">
+								       <OPTION value="0" selected="selected">0</OPTION>
+								       <OPTION value="1">1</OPTION>
+								       <OPTION value="2">2</OPTION>
+								       <OPTION value="3">3</OPTION>
+								       <OPTION value="7">7</OPTION>
+								       <OPTION value="10">10</OPTION>
+								       <OPTION value="15">15</OPTION>
+								       <OPTION value="30">30</OPTION>
+								    </SELECT>
+								    天
+								    <SELECT name="hours_time" id="hours_time">
+								       <OPTION value="0" selected="selected">0</OPTION>
+								       <OPTION value="1">1</OPTION>
+								       <OPTION value="2">2</OPTION>
+								       <OPTION value="3">3</OPTION>
+								       <OPTION value="5">5</OPTION>
+								       <OPTION value="8">8</OPTION>
+								       <OPTION value="10">10</OPTION>
+								    </SELECT>
+								  小时
+								    <SELECT name="mins_time" id="mins_time">
+								       <OPTION value="1">1</OPTION>
+								       <OPTION value="2" selected="selected">2</OPTION>
+								       <OPTION value="5">5</OPTION>
+								       <OPTION value="10">10</OPTION>
+								       <OPTION value="15">15</OPTION>
+								       <OPTION value="30">30</OPTION>
+								       <OPTION value="45">45</OPTION>
+								       <OPTION value="50">50</OPTION>
+								    </SELECT>
+								     分钟
+								    <SELECT name="cons_time"  id="cons_time">
+								       <OPTION value="0" selected="selected">0</OPTION>
+								       <OPTION value="10">10</OPTION>
+								       <OPTION value="15">15</OPTION>
+								       <OPTION value="30">30</OPTION>
+								       <OPTION value="45">45</OPTION>
+								       <OPTION value="50">50</OPTION>
+								    </SELECT>
+								   秒
+								</td>
+							</tr>
+						<tr>
+							<td class="col1"><h:outputLabel
+									value="#{commonMsg.actionLabel}"></h:outputLabel></td>
+							<td class="col2"><p:commandButton id="saveBtn"
+									value="#{commonMsg.saveLabel}"
+									action="#{userSafeConfigHome.configSave}">
+								<f:param value="#{userSafeConfigHome.configType}" name="configType"></f:param>
+								</p:commandButton> <p:commandButton type="reset" value="#{commonMsg.resetLabel}"></p:commandButton>
+							</td>
+						</tr>
+					</table>
+					<p:blockUI block="panel" trigger="saveBtn" />
+				</h:panelGroup>
+			</h:form>
+		</div>
+</ui:define>
+</ui:composition>
+
+</html>

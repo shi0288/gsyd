@@ -1,0 +1,108 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+<f:event type="preRenderComponent" listener="#{userHome.setId(loginUserInfo.loginUserId)}"></f:event>
+<ui:param name="user" value="#{userHome.instance}"></ui:param>
+<script>
+function oncomplete(xhr, status, args){
+	if(!args.validationFailed){
+		$.artDialog.tips("保存成功",2);
+	}
+}
+</script>
+<div class="wrapper-central">
+	<div class="person-set ztmain">
+    	<p class="tel font24">个人设置</p>
+        <p class="ter font18"><a class="zcol" href="#{path}/raise/user/center">返回个人中心</a></p>
+        <br/>
+        <div class="set-menu main-birder fl">
+        	<ul>
+            	<li class="current-set"><a href="javascript:void(0)">资料修改</a></li>
+                <li><a href="#{path}/raise/user/password">密码修改</a></li>
+<!--                 <li><a href="#">头像修改</a></li> -->
+                <li><a href="#{path}/raise/user/address">收件地址管理</a></li>
+            </ul>
+        </div>
+        <h:form>
+        <div class="set-con main-birder fr">
+            <div class="item clear">
+            	<div class="item-tit fl font16">
+                	用户名：
+                </div>
+                <div class="item-con fr">
+                	<label> #{user.username}</label>
+                </div>
+            </div>
+        	<div class="item clear">
+                <div class="item-tit fl font16">
+                    手机：
+                </div>
+                <div class="item-con fr">
+                  <label> #{user.mobileNumber}</label>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    性别：
+                </div>
+                <div class="item-con fr">
+                    <h:selectOneRadio value="#{user.sex}">
+                    	<f:selectItem itemLabel="男" itemValue="M"/>
+                    	<f:selectItem itemLabel="女" itemValue="F"/>
+                    	<f:selectItem itemLabel="保密" itemValue="S"/>
+                    </h:selectOneRadio>
+                </div>
+            </div>
+            <div class="item clear">
+            	<div class="item-tit fl font16">
+                	所在地：
+                </div>
+                <div class="item-con fr">
+                	<f:event listener="#{areaHome.initByCity(user.area)}" type="preRenderComponent" />
+					<h:selectOneMenu  styleClass="cm-border" value="#{areaHome.selectedProvince}" converter="archer.EntityConverter"  >
+						<f:selectItems value="#{areaHome.allProvinces}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+						<f:ajax listener="#{areaHome.findAllCities}" render="jobareaSelect"></f:ajax>
+					</h:selectOneMenu>
+					<h:panelGroup id="jobareaSelect" >
+						<h:selectOneMenu  value="#{user.area}" converter="archer.EntityConverter" styleClass="cm-border" rendered="#{not empty areaHome.allCities}">
+							<f:selectItems value="#{areaHome.allCities}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+						</h:selectOneMenu>
+					</h:panelGroup>
+                </div>
+            </div>
+            <div class="item clear">
+            	<div class="item-tit fl font16">
+                	网址：
+                </div>
+                <div class="item-con fr">
+                	<h:inputText value="#{user.homeAddress}" maxlength="100" label="网址" styleClass="fo-inp input-p-n cm-border"></h:inputText>
+                </div>
+            </div>
+            <div class="item clear">
+            	<div class="item-tit fl font16">
+                	个人说明：
+                </div>
+                <div class="item-con fr">
+                	<h:inputTextarea value="#{user.comment}" maxlength="500" label="个人说明" styleClass="cm-border"></h:inputTextarea>
+                </div>
+            </div>
+            <h:commandLink value="保存" styleClass="pre-nex-btn add-b-h mar-left100" >
+            	<p:ajax listener="#{userHome.update}" process="@form" oncomplete="oncomplete(xhr, status, args)"></p:ajax>
+            </h:commandLink>
+        </div>
+        </h:form>
+        <div class="clear"></div>
+    </div>
+</div>
+</ui:define>
+</ui:composition>

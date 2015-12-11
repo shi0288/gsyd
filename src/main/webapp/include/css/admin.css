@@ -1,0 +1,214 @@
+.col1 {
+	background: #F6F6F6;
+	color: #666A6B;
+	min-width: 180px;
+	text-align: right;
+	border-bottom: 1px solid #E9E9E9;
+	border-right: 1px solid #E9E9E9;
+	font-weight: bold;
+	font-size: 1.0em;
+	line-height: 25px;
+}
+
+.col1 label {
+	margin-right: 7px;
+}
+
+.col2 input, textarea, select, button {
+	margin: 3px 0 0 3px;
+}
+
+.col2 input[type=text], .col2 input[type=password] {
+	height: 17px;
+	width: 180px;
+}
+
+.col2 input.form-input-long {
+	width: 500px;
+}
+
+.col2 input.form-input-general {
+	width: 300px;
+}
+
+.col2 input.form-input-short {
+	width: 150px;
+}
+
+.col2 input.form-input-shorter {
+	width: 80px;
+}
+
+.search-form-input-text {
+	margin-left: 10px;
+	width: 190px;
+	height: 18px;
+}
+
+.search-form-item {
+	height: 25px;
+}
+
+.search-form-label {
+	width: 117px;
+	float: left;
+}
+
+.search-form-match-select {
+	width: 80px;
+}
+
+.search-form-input-select {
+	margin-left: 10px;
+}
+
+.filter-grid {
+	width: 100%;
+}
+
+.filter-col1 {
+	width: 150px;
+	text-align: right;
+}
+
+.filter-col1 label {
+	padding-right: 6px;
+}
+
+.filter-col2 {
+	
+}
+
+.filter-col2 {
+	padding: 5px;
+}
+
+.filter-row {
+	background: #F8F8F8;
+	line-height: 25px;
+}
+
+#loginPanel_content table {
+	float: left
+}
+
+.login-logo {
+	width: 134px;
+	height: 121px;
+	float: left;
+	margin: 4px 0 0 65px;
+}
+
+.clear {
+	clear: both
+}
+
+#header #logo {
+	width: 133px;
+	height: 36px;
+	float: left;
+	margin: 9px 0 0 31px;
+}
+
+#header #menu {
+	height: 25px;
+	font-family: "Î¢ÈíÑÅºÚ";
+	top: 20px;
+	right: 80px;
+}
+
+#header #menu ul li {
+	line-height: 25px;
+	height: 25px;
+	float: left;
+	display: block;
+	margin: 0 5px 0 23px;
+}
+
+#header #menu ul li a {
+	font-size: 14px;
+	padding: 0;
+	background: none
+}
+
+#header #menu ul .system-home {
+	background: url(../images/admin/home.png) no-repeat left;
+	padding-left: 25px;
+}
+
+#header #menu ul .node-list {
+	background: url(../images/admin/list.png) no-repeat left;
+	padding-left: 23px;
+}
+
+#header #menu ul .add-node {
+	background: url(../images/admin/add.png) no-repeat left;
+	padding-left: 25px
+}
+
+#header #menu ul .my-key {
+	background: url(../images/admin/key.png) no-repeat left;
+	padding-left: 25px
+}
+
+#header #menu ul .site-home {
+	background: url(../images/admin/apple.png) no-repeat left;
+	padding-left: 33px;
+}
+
+#header #menu ul .logout {
+	background: url(../images/admin/power-off.png) no-repeat left;
+	padding-left: 25px;
+}
+
+.post #j_idt99 {
+	padding: 6px 0 0 17px;
+}
+
+.ui-toolbar-group-left label {
+	height: 29px;
+	line-height: 29px;
+}
+
+.ui-panel .ui-widget-content input {
+	margin-left: 5px;
+}
+
+#sidebar li {
+	height: 15px;
+	border-bottom: solid 0px #c0c0c0;
+	color: #606060;
+	font-family: "Î¢ÈíÑÅºÚ";
+}
+
+.ui-panelmenu .ui-menuitem {
+	width: 99%;
+}
+
+/*菜单箭头*/
+#sidebar {
+	position: relative;
+}
+
+#sidebar .arrow {
+	height: 100%;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 10px;
+	z-index: 10;
+}
+
+#sidebar .arrow.left {
+	background: url("../images/productPictureLeft.gif") no-repeat center
+		center;
+}
+
+#sidebar .arrow.right {
+	background: url("../images/productPictureRight.gif") no-repeat center
+		center;
+}
+
+#sidebar .arrow:hover {
+	
+}

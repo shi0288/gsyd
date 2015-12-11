@@ -1,0 +1,44 @@
+apply plugin: 'java'
+
+apply plugin: 'war'
+
+war{
+    baseName='ROOT'
+}
+
+
+
+tasks.withType(JavaCompile){ options.encoding = "utf-8"}
+dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+project.libsDirName = 'artifacts/WEB-INF/lib/'
+
+task copyWebNorConfig(type: Copy) {
+    into "$buildDir/artifacts/WEB-INF/classes/"
+    from "src/main/resources"
+}
+
+task copyToLib(dependsOn: configurations.runtime.buildDependencies, type: Copy) {
+    into "$buildDir/artifacts/WEB-INF/lib/"
+    from configurations.runtime
+}
+
+task copyWeb(type: Copy) {
+    into "$buildDir/artifacts/"
+    from "src/main/webapp"
+}
+
+
+project.jar.dependsOn copyWeb
+project.jar.dependsOn copyToLib
+project.jar.dependsOn copyWebNorConfig
+
+jar {
+    exclude '*.xml', '*.properties', 'config', 'META-INF'
+}
+
+
+
+

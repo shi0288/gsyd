@@ -1,0 +1,283 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+<f:metadata>
+	<f:viewParam name="id" value="#{raiseLoanHome.id}"></f:viewParam>
+</f:metadata>
+<ui:param name="raiseLoan" value="#{raiseLoanHome.instance}"></ui:param>
+<ui:param name="keywords" value="#{raiseLoan.title}"></ui:param>
+<ui:param name="description" value="#{raiseLoan.info}"></ui:param>
+<ui:define name="content">
+<script>
+$(function(){
+	var $lis=$('.top-tab ul li');
+	$(".wrapper-central").on("click",".top-tab ul li",function(){
+		$(this).addClass('current-li').siblings().removeClass('current-li');
+		var $index=$lis.index(this);
+		$('.tab-cons>div').eq($index).show().siblings().hide();	
+	});
+	
+	$(".su-ter li").each(function(i, n){
+		if(i%5==0){
+			$(n).css("margin-left", 0);
+		}
+	});
+	
+	if($(".selfless-nologin")[0]){
+		$(".tosupport").remove();
+		$(".already").remove();
+	}else if($(".selfless-support")[0]){
+		$(".tosupport").show();
+		$(".nologin").remove();
+		$(".already").remove();
+	}else if($(".selfless-alreay")[0]){
+		$(".already").show();
+		$(".nologin").remove();
+		$(".tosupport").remove();
+	}
+	
+	$(".tab-con").on("click",".commont-select",function(){
+		clearPage1();
+	});
+});
+</script>
+<!-- 有管理员权限可查看所有状态的项目，主要用于发布前预览项目；项目发起人可查看自己未发布的项目 -->
+<ui:fragment rendered="#{(raiseLoan.status ne RaiseLoanStatus.DRAFT and raiseLoan.status ne RaiseLoanStatus.WAITING_VERIFY) or role:ifAllGranted('ROLE_ADMIN') or raiseLoan.user.id eq loginUserInfo.loginUserId}">
+<div class="wrapper-central">
+<h:form id="form">
+	
+	<p:remoteCommand process="@this" immediate="true" name="clearPage1" actionListener="#{raiseLoanCommentList.setCurrentPage(1)}"></p:remoteCommand>
+	<div class="product-t ztmain clear">
+    	<div class="pro-t-le fl">
+        	<h3>#{raiseLoan.title}</h3>
+            <div class="fqr">发起人：<span>#{raiseLoan.user.username}</span>#{raiseLoan.user.area.parent.name}&#160;#{raiseLoan.user.area.name}</div>
+        </div>
+        <div class="pro-t-ri fr">
+        		<ui:fragment rendered="#{empty loginUserInfo.loginUserId}">
+            		<a class="font18 support nologin" href="#{path}/raise/membersLogin?spring-security-redirect=/raise/loanDetail/#{raiseLoan.id}">支持</a>
+            	</ui:fragment>
+            	<ui:fragment rendered="#{not empty loginUserInfo.loginUserId}">
+            		<a class="font18 support tosupport" href="javascript:void(0)" onclick="location.href=$('.selfless-support').attr('href')">支持</a>
+            	</ui:fragment>
+            <h:panelGroup id="like">
+            	<ui:fragment rendered="#{not empty loginUserInfo.loginUserId}">
+	            	<h:commandLink value="喜欢" styleClass="font18 like" rendered="#{raiseLoanHome.canLike(loginUserInfo.loginUserId)}">
+	            		<f:ajax listener="#{raiseLoanHome.addLiker(loginUserInfo.loginUserId)}" render="like"></f:ajax>
+	            	</h:commandLink>
+	            	<ui:fragment rendered="#{!raiseLoanHome.canLike(loginUserInfo.loginUserId)}">
+	            		<a class="font18 like hover" href="javascript:void(0)">&#160;&#160;已喜欢</a>
+	            	</ui:fragment>
+            	</ui:fragment>
+            	<ui:fragment rendered="#{empty loginUserInfo.loginUserId}">
+            		<a class="font18 like" href="#{path}/raise/membersLogin?spring-security-redirect=/raise/loanDetail/#{raiseLoan.id}">喜欢</a>
+            	</ui:fragment>
+            </h:panelGroup>
+        </div>
+    </div>
+    <div class="ztmain clear">
+    	<div class="pro-b-le fl">
+        	<div class="top-tab clear">
+            	<ul class="fl">
+                	<li class="current-li">项目主页</li>
+                    <li>评论(<span id="comment-count"></span>)</li>
+                    <li>支持者(#{raiseLoanHome.getSupportCount(raiseLoan.id)})</li>
+                </ul>
+			<div class="share-div">
+	            <div class="bdsharebuttonbox"><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a><a href="#" class="bds_more" data-cmd="more"></a></div>
+				<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+			</div>
+            </div>
+            <div class="tab-cons">
+                <div class="tab-con" style="display:block">
+                		<ui:fragment rendered="#{not empty raiseLoan.video}">
+                			<center><embed src="#{raiseLoan.video}" width="500px;" height="350px;"></embed></center>
+                		</ui:fragment>
+						<h:outputText value="#{raiseLoan.description}" escape="false"></h:outputText>                        
+                        <p>
+                        	分类：<span class="all">#{dictUtil.getValue('raise_type',raiseLoan.type)}</span>&#160;&#160;&#160;&#160;
+<!--                         	标签：<span class="all">硬件设备</span> -->
+                        </p>
+                    <div class="hot clear">
+                        <p>&#160;&#160;热门推荐</p>
+					   <f:event type="preRenderComponent" listener="#{raiseLoanList.example.setStatus(RaiseLoanStatus.RAISING)}"></f:event>
+					   <f:event type="preRenderComponent" listener="#{raiseLoanList.setPageSize(4)}"></f:event>
+					   <f:event type="preRenderComponent" listener="#{raiseLoanList.addOrder('rl.commitTime','desc')}"></f:event>
+					   <ui:repeat var="hot" value="#{raiseLoanList.lazyModelData}">
+	                        <dl style="cursor:pointer;" onclick="location.href='#{path}/raise/loanDetail/#{hot.id}'">
+	                            <dt><img src="#{path}#{hot.photo}" style="width:150px;height:106px;"/></dt>
+	                            <dd class="font14">#{hot.title}</dd>
+	                            <dd class="font12">已筹资：<span>￥
+	                            	<h:outputText value="#{raiseLoanHome.getRaisedMoney(hot.id)}">
+										<f:convertNumber type="number" pattern="#,###" />
+									</h:outputText>
+	                            (<h:outputText value="#{raiseLoanHome.getRaisedMoney(hot.id)/hot.money}">
+										<f:convertNumber type="number" pattern="#,###.##%" />
+									</h:outputText>)</span></dd>
+	                            <dd class="font12">剩余时间：<span>
+	                            	#{of:daysBetween(now,of:addDays(hot.verifyTime, hot.deadline))}天
+	                            </span></dd>
+	                        </dl>
+                        </ui:repeat>
+                    </div>
+                </div>
+                
+                <div class="tab-con" style="display:none">
+                	<h:panelGroup id="commentList" style="display:block;">
+	                    <h:inputTextarea id="commentArea" value="#{raiseLoanHome.comment.body}" required="true" label="评论内容"></h:inputTextarea>
+	                    <h:commandLink styleClass="pl-btn font16" value="发表评论" id="publishComment" onclick="clearPage1()">
+	                    	<p:ajax listener="#{raiseLoanHome.addComment()}" process="@this commentArea" update="commentList"></p:ajax>
+	                    </h:commandLink>
+	                    <div class="pl-all">
+	                    	<h:commandLink styleClass="commont-select #{empty raiseLoanCommentList.example.userByCreator.id?'all':''}" value="全部">
+	                    		<f:ajax listener="#{raiseLoanCommentList.example.userByCreator.setId('')}" render="commentList"></f:ajax>
+	                    	</h:commandLink>
+	                    	<h:commandLink styleClass="commont-select #{empty raiseLoanCommentList.example.userByCreator.id?'':'all'}" value="只看发起人">
+	                    		<f:ajax listener="#{raiseLoanCommentList.example.userByCreator.setId(raiseLoan.user.id)}" render="commentList"></f:ajax>
+	                    	</h:commandLink>
+	                    </div>
+	                    <f:event type="preRenderComponent" listener="#{raiseLoanCommentList.setRaiseLoanId(raiseLoan.id)}"></f:event>
+	                    <f:event type="preRenderComponent" listener="#{raiseLoanCommentList.addOrder('comment.updateTime','desc')}"></f:event>
+	                    <f:event type="preRenderComponent" listener="#{raiseLoanCommentList.setPageSize(7)}"></f:event>
+	                    <ul class="pl-list">
+	                    	<ui:repeat var="comment" value="#{raiseLoanCommentList.lazyModelData}">
+		                        <li>
+		                            <span class="aut_img">
+		                            	<ui:fragment rendered="#{not empty comment.userByCreator.photo}">
+					                		<img src="#{path}#{comment.userByCreator.photo}" />
+					                	</ui:fragment>
+					                	<ui:fragment rendered="#{empty comment.userByCreator.photo}">
+					                		<img src="#{tplVars.themeImagePath}/raise/pic.png" />
+					                	</ui:fragment>
+		                            </span>
+		                            <p class="aut_name">#{fn:substring(comment.userByCreator.id,0,2)}***#{fn:substring(comment.userByCreator.id,comment.userByCreator.id.length()-3,comment.userByCreator.id.length())}<span>#{dateUtil.getHowLong(comment.updateTime)}</span></p>
+		                            <p class="pl_con">#{comment.body}</p>
+	<!-- 	                            <a class="abst" href="#">评论(56)</a> -->
+		                        </li>
+	                        </ui:repeat>
+	                    </ul>
+	                     <p class="zc-pagebar mg-top">
+	                     	<ui:include src="comment-list-paging.xhtml"></ui:include>
+	                     </p>
+	                     <input type="hidden" id="commentCount" value="#{raiseLoanCommentList.lazyModel.rowCount}"></input>
+	                     <script>$("#comment-count").html($("#commentCount").val());</script>
+                    </h:panelGroup>
+                </div>
+                
+                
+                <div class="tab-con clear" style="display:none">
+                    <ul class="su-ter">
+                    	<ui:repeat var="ri" value="#{raiseLoanHome.getSuppoters(raiseLoan.id)}">
+	                        <li>
+                                <span class="aut_img02">
+	                                <ui:fragment rendered="#{not empty ri.user.photo}">
+				                		<img src="#{path}#{ri.user.photo}" />
+				                	</ui:fragment>
+				                	<ui:fragment rendered="#{empty ri.user.photo}">
+				                		<img src="#{tplVars.themeImagePath}/raise/pic.png" />
+				                	</ui:fragment>
+                                </span>
+                                <h3>#{fn:substring(ri.user.username,0,2)}***#{fn:substring(ri.user.username,ri.user.username.length()-3,ri.user.username.length())}</h3>
+                                <span class="colb1 font14">支持此项目</span><br />
+                                <strong>
+                                	<ui:fragment rendered="#{ri.payback.money gt 0}">#{ri.payback.money}元</ui:fragment>
+                                	<ui:fragment rendered="#{ri.payback.money eq 0}">无私支持</ui:fragment>
+                                </strong><br />
+<!--                                 <a class="fsx" href="#">发私信</a><br /> -->
+	                        </li>
+                    	</ui:repeat>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="pro-b-ri fr">
+        	<div class="pro-b-box">
+            	<h4 class="font16">目前累计资金</h4>
+                <strong class="font36">￥
+                	<h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)}">
+						<f:convertNumber type="number" pattern="#,###" />
+					</h:outputText>
+                </strong>
+                <p>此项目必须在
+                	<h:outputText value="#{of:addDays(raiseLoan.verifyTime, raiseLoan.deadline)}" rendered="#{not empty raiseLoan.verifyTime}">
+						<f:convertDateTime pattern="yyyy年MM月dd日" timeZone="GMT+8" />
+					</h:outputText>
+                前得到￥
+                	<h:outputText value="#{raiseLoan.money}">
+						<f:convertNumber type="number" pattern="#,###" />
+					</h:outputText>
+                的支持才可成功！</p>
+                <em><b style="width:#{raiseLoanHome.getRaisedMoney(raiseLoan.id)*100.0/raiseLoan.money}%"></b></em>
+                <h:outputText value="#{raiseLoanHome.getRaisedMoney(raiseLoan.id)/raiseLoan.money}">
+					<f:convertNumber type="number" pattern="#,###.##%" />
+				</h:outputText>
+            </div>
+            <div class="pro-p-3">
+                <p><strong>
+                	<ui:fragment rendered="#{raiseLoan.status eq RaiseLoanStatus.RAISING}">#{of:daysBetween(now,of:addDays(raiseLoan.verifyTime, raiseLoan.deadline))}天</ui:fragment>
+                	<ui:fragment rendered="#{raiseLoan.status ne RaiseLoanStatus.RAISING}">已结束</ui:fragment>
+                </strong><br />剩余时间</p>
+                <p><strong>#{raiseLoanHome.getSupportCount(raiseLoan.id)}</strong><br />支持者</p>
+                <p><strong>#{raiseLoan.likers.size()}</strong><br />喜欢</p>
+            </div>
+            <ui:repeat var="payback" value="#{raiseLoan.paybacks}">
+            	<!-- 非无私支持 -->
+	            <ui:fragment rendered="#{payback.money gt 0}">
+		            <div class="pro-b-box">
+		            	<div class="clear bor-bottom">
+		                	<strong class="fl">￥
+		                		<h:outputText value="#{payback.money}">
+									<f:convertNumber type="number" pattern="#,###" />
+								</h:outputText>
+		                	</strong>
+		                    <span class="fr">已有#{raisePaybackHome.getSupportCount(payback.id)}支持者/
+		                    	<ui:fragment rendered="#{not empty payback.limit}">限额#{payback.limit}位</ui:fragment>
+								<h:outputText value="不限" rendered="#{empty payback.limit}"></h:outputText>
+		                    </span>
+		                </div>
+		                <p>【#{payback.title}】#{payback.description}</p>
+		                <center><img src="#{path}#{payback.photo}" class="payback-img"/></center>
+		                <p>配送运费:<span>#{payback.logistics eq LogisticsType.type0?'无须配送':'免运费'}</span></p>
+		                <p>预计发送时间:<span>
+		                	<ui:fragment rendered="#{payback.payTime gt 0}">项目成功结束后#{payback.payTime}天</ui:fragment>
+		                	<h:outputText rendered="#{payback.payTime eq 0}">项目成功结束后立即回报</h:outputText>
+		                </span></p>
+		            </div>
+		            <ui:fragment rendered="#{raisePaybackHome.canSupport(payback.id)}">
+		            	<a class="zhichi" href="#{path}/raise/invest/#{payback.id}">支持</a>
+		            </ui:fragment>
+		            <ui:fragment rendered="#{!raisePaybackHome.canSupport(payback.id)}">
+		            	<a class="zhichi selfless-alreay" href="#{path}/raise/invest/#{payback.id}">已满额</a>
+		            </ui:fragment>
+	            </ui:fragment>
+	             <ui:fragment rendered="#{payback.money eq 0}">
+	             	<div class="pro-b-box">
+		            	<div class="clear bor-bottom">
+		                	<strong class="fl">无私支持</strong>
+		                    <span class="fr">已有#{raisePaybackHome.getSupportCount(payback.id)}位支持者</span>
+		                </div>
+		                <p>#{payback.description}</p>
+		            </div>
+		            <ui:fragment rendered="#{empty loginUserInfo.loginUserId}">
+		            	<a class="zhichi selfless-nologin" href="#{path}/raise/membersLogin?spring-security-redirect=/raise/loanDetail/#{raiseLoan.id}">支持</a>
+		            </ui:fragment>
+		            <ui:fragment rendered="#{not empty loginUserInfo.loginUserId}">
+		            	<a class="zhichi selfless-support" href="#{path}/raise/investSelfless/#{payback.id}">支持</a>
+		            </ui:fragment>
+	             </ui:fragment>
+            </ui:repeat>
+        </div>
+    </div>
+</h:form>
+</div>
+</ui:fragment>
+</ui:define>
+</ui:composition>

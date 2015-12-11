@@ -1,0 +1,94 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+<ui:define name="content">
+<f:event type="preRenderComponent" listener="#{userHome.setId(loginUserInfo.loginUserId)}"></f:event>
+<script type="text/javascript">
+	function alreadyHas(){
+		if($(".valid-card")[0]){
+			alert("只能绑定一张银行卡，请先执行解绑操作。");
+			return false;
+		}
+	}
+</script>
+<sec:ifNotGranted roles="INVESTOR,LOANER">
+			<script>
+				$.dialog.alert(
+								'为了您的账户资金安全，请先进行实名认证!',
+								function() {
+									window.location.href = "#{path}/raise/permission";
+								});
+			</script>
+	</sec:ifNotGranted>
+<sec:ifAnyGranted roles="INVESTOR,LOANER">
+<div class="wrapper-central">
+	<div class="person-set ztmain">
+    	<p class="tel font24">资金管理</p>
+        <div class="ad-set-menu fl">
+        	<ul>
+            	<li><a href="#{path}/raise/user/recharge">充值</a></li>
+                <li><a href="#{path}/raise/user/withdraw">提现</a></li>
+                <li class="current-ad-set"><a href="#{path}/raise/user/bankcards">银行卡管理</a></li>
+            </ul>
+        </div>
+        <div class="ad-set-con main-birder fr">
+        	<div class="center_right">
+				<h:form id="form">
+					<div class="zhcz_h3">已添加银行卡</div>
+					<ul class="yhkxx">
+						  <ui:repeat var="bankcard" value="#{bankCardList.getBankCardListbyLoginUser()}">
+						   <ui:fragment rendered="#{bankcard.status ne BankCardStatus.DELETED}">
+							<li><div class="yhk"><img src="#{tplVars.themeImagePath}/yeepaybanklogo/#{bankcard.bankNo}.png" />
+							<br/>
+							<ui:param name="bcnL" value="#{bankcard.cardNo.length()}"></ui:param>
+							<p>#{fn:substring(bankcard.cardNo ,0,4)}**** **** #{fn:substring(bankcard.cardNo ,bcnL-4,bcnL)}</p>
+							</div>
+							<ui:fragment rendered="#{bankcard.status == 'VERIFIED'}">
+	                           	<a class="yhkxx_l valid-card" style="cursor:default"  href="javascript:void(0);">通过</a>
+	                       		   </ui:fragment>
+	                        		  <ui:fragment rendered="#{bankcard.status == 'VERIFYING'}">
+	                         		  <a class="yhkxx_l valid-card" style="cursor:default"  href="javascript:void(0);"> 审核中</a>
+	                         		</ui:fragment>
+	                        		  <ui:fragment rendered="#{bankcard.status == 'FAIL'}">
+	                         		   <a class="yhkxx_l" href="javascript:void(0);" style="cursor:default" >审核失败</a>
+	                        </ui:fragment>
+							<ui:fragment rendered="#{bankcard.status == 'VERIFIED'}">
+		                          	<h:commandLink styleClass="yhkxx_r" action="#{bankCardHome.unbindingCardTrusteeship}" value="解除绑定"  target="_blank"></h:commandLink>
+		                    </ui:fragment>
+								<div class="clear"></div></li>
+							</ui:fragment>
+						</ui:repeat>
+	
+						<li><div class="yhk">
+						  <h:commandLink  target="_blank" action="#{bankCardHome.bindingCardTrusteeship}" onclick="return alreadyHas()">
+						   <img class="jia" src="#{tplVars.themeImagePath}/img46.png" />
+						  </h:commandLink>
+							</div> 
+							<f:event type="preRenderComponent" listener="#{facesUtil.setSessionAttribute('returnPage','pretty:raiseUserCenter')}"></f:event>
+							 <h:commandLink  styleClass="yhkxx_c" value="新增银行卡" target="_blank" action="#{bankCardHome.bindingCardTrusteeship}" onclick="return alreadyHas()">
+							 </h:commandLink>
+							<div class="clear"></div></li>
+						<div class="clear"></div>
+					</ul>
+				</h:form>
+				<p class="zhcz_p02">
+					温馨提示<br /> 1、如果您填写的开户行支行不正确，可能将无法成功提现，由此产生的提现费用将不予返还。<br />
+					2、如果您不确定开户行支行名称，可打电话到所在地银行的营业网点询问或上网查询。<br /> 3、不支持提现至信用卡账户。
+				</p>
+			</div>
+			<div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+</sec:ifAnyGranted>
+</ui:define>
+</ui:composition>

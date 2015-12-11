@@ -1,0 +1,311 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+	<f:metadata>
+		<f:viewParam name="id" value="#{raiseLoanHome.id}"></f:viewParam>
+	</f:metadata>
+<ui:define name="content">
+	<ui:param name="raiseLoan" value="#{raiseLoanHome.instance}"></ui:param>
+	<script type="text/javascript" charset="utf-8"  src="#{appInfo.contextPath}/include/js/ueditor1_3_6-utf8-jsp/ueditor.config.js"></script>
+   <script type="text/javascript" charset="utf-8"   src="#{appInfo.contextPath}/include/js/ueditor1_3_6-utf8-jsp/ueditor.all.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="#{path}/include/css/fileupload.less.css" />
+   <script type="text/javascript" src="#{path}/include/js/fileupload.less.js"></script>
+	<style>
+		.photo .item-con {
+		  float: left;
+		  position: relative;
+		  width: 243px;
+		}
+		.photo .upload-btn{
+			position:absolute;
+			right:0;
+			bottom:0;
+		}
+		.photo .item-con a{
+			margin-right:0;
+			margin-bottom:0;
+		}
+		.photo .ui-fileupload{
+			filter: alpha(opacity = 0); 
+		    - moz - opacity: 0; 
+		    - khtml - opacity: 0;
+		    opacity: 0;
+		}
+	</style>
+	<script>
+	//<![CDATA[
+		$(function(){
+			$(".item-con a").click(function(){
+				$(this).parent().find(".sel-type").removeClass("sel-type");
+				$(this).addClass("sel-type");
+			});
+			var type = "#{raiseLoan.type}";
+			if(type != ""){
+				$(".#{raiseLoan.type}").addClass("sel-type");
+			}
+			$("#form\\:title").keyup(function(){
+				$("#view-title").html($(this).val());
+			});
+			$(".input-p-day").keyup(function(){
+			  $("#raise-days").html($(this).val());
+			});
+			$(".input-p-sum").keyup(function(){
+			  $("#target-money").html($(this).val());
+			});
+			
+			setInterval(competePercent, 1000);
+		});
+		function chosentype(){
+			if(!$(".item-con .sel-type")[0]){
+				$.dialog.tips("请选择众筹类别");
+				return false;
+			}
+			return true;
+		}
+		function competePercent(){
+			var i = 1;
+			if($(".sel-type")[0]){
+				i++;
+			}
+			if($("#form\\:title").val()){
+				i++;
+			}
+			if($("#form\\:idCardPhotoImage")[0]){
+				i++;
+			}
+			if($("#form\\:video").val()){
+				i++;
+			}
+			if($(".input-p-day").val()){
+				i++;
+			}
+			if($(".input-p-sum").val()){
+				i++;
+			}
+			if($("#form\\:info").val()){
+				i++;
+			}
+			if($("#form\\:description").val()){
+				i++;
+			}
+			$("#progress-bar").css("width", i*100/9.0+"%");
+			$("#complete-percent").html(formatCurrencyTenThou(i*100/9.0)+"%");
+		}
+		function formatCurrencyTenThou(num) {
+			num = num.toString().replace(/\$|\,/g,'');
+		    if(isNaN(num))
+		    num = "0";
+		    sign = (num == (num = Math.abs(num)));
+		    num = Math.floor(num*100+0.50000000001);
+		    cents = num%100;
+		    num = Math.floor(num/100).toString();
+		    if(cents<10)
+		    cents = "0" + cents;
+		    for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++)
+		    num = num.substring(0,num.length-(4*i+3))+','+
+		    num.substring(num.length-(4*i+3));
+		    return (((sign)?'':'-') + num + '.' + cents);
+		}
+	//]]>
+	</script>
+<ui:fragment rendered="#{empty raiseLoan.user.id or (raiseLoan.user.id eq loginUserInfo.loginUserId and (raiseLoan.status eq RaiseLoanStatus.DRAFT or raiseLoan.status eq RaiseLoanStatus.VERIFY_FAIL))}">
+	<div class="wrapper-central">
+	    	<div class="flow-chart clear">
+    	<div class="bz bz-01 fl">
+        	<i class="bz-i-01"></i>
+        </div>
+        <div class="bz bz-02 fl">
+            <i class=""></i>
+        </div>
+        <div class="bz bz-03 fl">
+            <i class=""></i>
+        </div>
+        <div class="bz bz-04 fr">
+            <i class=""></i>
+        </div>
+    </div>
+	    <div class="ztmain bz-font">
+	    	<span class="font16 bz-fon01">1.填写项目信息</span>
+	        <span class="font16 bz-fon02">2.设置回报</span>
+	        <span class="font16 bz-fon03">3.填写发布人信息</span>
+	        <span class="font16 bz-fon04">4.等待审核</span>
+	    </div>
+	    <h:form id="form">
+	    <div class="info-main ztmain clear">
+	    	<div class="info-main-le fl">
+	        	<div class="item clear">
+	            	<div class="item-tit fl font16">
+	                	发布类型：<label>*</label>
+	                </div>
+	                <div class="item-con fr">
+	                    <ui:repeat var="type" value="#{dictUtil.getDictByParentKey('raise_type')}">
+	                    	<h:commandLink title="#{type.value}" value="#{type.value}" styleClass="#{type.key}">
+								<f:ajax listener="#{raiseLoan.setType(type.key)}"></f:ajax>
+							</h:commandLink>
+	                    </ui:repeat>
+	                </div>
+	            </div>
+	            <div class="item clear">
+	            	<div class="item-tit fl font16">
+	                	项目名称：<label>*</label>
+	                </div>
+	                <div class="item-con fr">
+	                	<h:inputText value="#{raiseLoan.title}" styleClass="fo-inp input-p-n cm-border" id="title" maxlength="10"  required="true" label="项目名称">
+	                	</h:inputText>
+	                	<p:watermark value="项目名称不超过十个字" for="title"></p:watermark>
+	                </div>
+	            </div>
+	            <div class="item clear photo">
+	            	<div class="item-tit fl font16">
+	                	项目图片：<label>*</label>
+	                </div>
+	                <div class="item-con fr">
+	                	<a class="upload-btn" href="javascript:void(0)">上传</a>
+	                	<h:panelGroup id="raiseLoanPhoto">
+							<p:graphicImage id="idCardPhotoImage" value="#{raiseLoan.photo}" rendered="#{not empty raiseLoan.photo}" style="width:150px;height:105px;float: left;" title="项目图片"/>
+							<ui:fragment rendered="#{empty raiseLoan.photo}">
+								<span style="width:150px;height:105px;float: left;line-height:105px;text-align:center;background-color:#ebebe9;border: 1px dashed #3cafb1;">项目图片</span>
+							</ui:fragment>
+							<p:fileUpload dragDropSupport="true" update="raiseLoanPhoto,viewPhoto" id="upload" styleClass="upload-btn"
+								invalidFileMessage="#{commonMsg.invalidFileMessage}" required="true"
+								invalidSizeMessage="#{commonMsg['validator.SizeValidator.MAXIMUM500k']}"
+								label="上传" fileLimit="1"
+								fileUploadListener="#{raiseLoanHome.uploadPhoto}" mode="advanced"
+								auto="true" sizeLimit="500000"
+								allowTypes="/(\.|\/)(gif|jpe?g|png|JPG|JPEG|GIF)$/" />
+						</h:panelGroup>
+	                </div>
+	            </div>
+	            <div class="item clear">
+	            	<div class="item-tit fl font16">
+	                	发起城市：<label>*</label>
+	                </div>
+	                <div class="item-con fr">
+	                    <f:event listener="#{areaHome.initByCity(raiseLoan.area)}"
+							type="preRenderComponent" />
+						<h:selectOneMenu  styleClass="cm-border" value="#{areaHome.selectedProvince}" converter="archer.EntityConverter">
+							<f:selectItems value="#{areaHome.allProvinces}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+							<f:ajax listener="#{areaHome.findAllCities}" render="jobareaSelect"></f:ajax>
+						</h:selectOneMenu>
+						<h:panelGroup id="jobareaSelect" >
+							<h:selectOneMenu  value="#{raiseLoan.area}" 
+								converter="archer.EntityConverter" styleClass="cm-border"
+								rendered="#{not empty areaHome.allCities}">
+								<f:selectItems value="#{areaHome.allCities}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+							</h:selectOneMenu>
+						</h:panelGroup>
+	                </div>
+	            </div>
+	            <div class="item clear">
+	            	<div class="item-tit fl font16">
+	                	项目视频：<label>&#160;&#160;</label>
+	                </div>
+	                <div class="item-con fr">
+	                	<h:inputText value="#{raiseLoan.video}" styleClass="fo-inp input-p-n cm-border" id="video" label="项目视频"/>
+	                	<p:watermark value="视频地址" for="video"></p:watermark>
+	                </div>
+	            </div>
+	            <div class="item clear">
+	            	<div class="item-tit fl font16">
+	                	筹款天数：<label>*</label>
+	                </div>
+	                <div class="item-con fr">
+	                	<h:inputText value="#{raiseLoan.deadline}" styleClass="fo-inp input-p-day cm-border" required="true" label="筹款天数">
+							<o:validator validatorId="javax.faces.DoubleRange" minimum="10" maximum="90"></o:validator>
+	                	</h:inputText>
+	                	&#160;&#160;天&#160;&#160;（10-90天）建议30天
+	                </div>
+	            </div>
+	            <div class="item clear">
+	            	<div class="item-tit fl font16">
+	                	目标金额：<label>*</label>
+	                </div>
+	                <div class="item-con fr">
+	                	<h:inputText value="#{raiseLoan.money}" styleClass="fo-inp input-p-sum cm-border" required="true" label="目标金额">
+							<o:validator validatorId="javax.faces.DoubleRange" minimum="1000" maximum="10000000000"></o:validator>
+	                	</h:inputText>
+	                	&#160;&#160;元&#160;&#160;
+	                    目前金额不能低于1000元，不能高于10000000000。
+	                </div>
+	            </div>
+	            <div class="item clear">
+	            	<div class="item-tit fl font16">
+	                	项目概述：<label>*</label>
+	                </div>
+	                <div class="item-con fr">
+	                	<h:inputTextarea styleClass="cm-border" value="#{raiseLoan.info}" id="info" required="true" label="项目概述"></h:inputTextarea>
+	                	<p:watermark value="简单的介绍你的项目，不超过50个字" for="info"></p:watermark>
+	                </div>
+	            </div>
+	            <div class="item clear">
+	            	<div class="item-tit fl font16">
+	                	项目描述：<label>*</label>
+	                </div>
+	                <div class="item-con fr">
+	                	<h:inputTextarea styleClass="cm-border" value="#{raiseLoan.description}" id="description"></h:inputTextarea>
+	                	<script type="text/javascript">
+							var ue = new UE.ui.Editor({
+								toolbars: [
+								           [
+								               'undo', //撤销
+								               'redo', //重做
+								               'bold', //加粗
+								               'italic', //斜体
+								               'underline', //下划线
+								               'strikethrough', //删除线
+								               'fontfamily', //字体
+								               'fontsize', //字号
+								               'paragraph', //段落格式
+								               'simpleupload', //单图上传
+								               'insertimage', //多图上传
+								               'forecolor', //字体颜色
+								               'lineheight', //行间距
+								               'indent', //首行缩进
+								               'imagecenter' //居中
+								           ]
+								       ]
+							});
+							ue.render('form:description');
+						</script>
+	                </div>
+	            </div>
+				<div class="mar-top50">
+					<h:commandLink value="保存" styleClass="save-btn mar300 font18" onclick="return chosentype()">
+						<f:ajax execute="@form" listener="#{raiseLoanHome.save}"></f:ajax>
+					</h:commandLink>
+					<h:commandLink value="下一步" styleClass="pre-nex-btn add-b-h font18" action="#{raiseLoanHome.save}" onclick="return chosentype()">
+						<f:setPropertyActionListener value="next" target="#{raiseLoanHome.saveView}" />
+					</h:commandLink>
+				</div>
+	        </div>
+	        <div class="info-main-ri fr">
+	        	<div class="p-pic" style="display:inline-block;">
+	        		<h:panelGroup id="viewPhoto">
+		            	<p:graphicImage id="idCardPhotoImage1" value="#{raiseLoan.photo}" rendered="#{not empty raiseLoan.photo}" style="width:248px;height:155px;float: left;" title="项目图片"/>
+						<ui:fragment rendered="#{empty raiseLoan.photo}">
+							<span style="width:248px;height:155px;float: left;line-height:155px;text-align:center;background-color:#ebebe9;border: 1px dashed #3cafb1;">项目图片</span>
+						</ui:fragment>
+					</h:panelGroup>
+	            	<div class="ckz-bg">筹款中</div>
+	            </div>
+	            <p class="p-disc" id="view-title" style="min-height:55px;">
+	            	项目预览
+	            </p>
+	            <em class="progress-bar"><b id="progress-bar" style="width:0%"></b></em>
+	            <p class="p-num-01"><span class="num01" id="complete-percent">0%</span><span class="num02" id="target-money">0</span><span class="num03" id="raise-days">0</span></p>
+	            <p class="p-num-02"><span class="num01">资料完善率</span><span class="num02">目标金额</span><span class="num03">众筹天数</span></p>
+	        </div>
+	    </div>
+	    </h:form>
+	</div>
+</ui:fragment>
+</ui:define>
+</ui:composition>

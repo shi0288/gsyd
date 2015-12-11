@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+
+<ui:param name="servletPath" value="#{requestScope['javax.servlet.forward.servlet_path']}"></ui:param>
+<ui:param name="path" value="#{request.contextPath}"></ui:param>
+<ui:param name="menuParentId" value="#{menuList.getParentIdByChildUrl(servletPath)}"></ui:param>
+<o:importConstants type="com.esoft.jdp2p.bankcard.BankCardConstants.BankCardStatus" />
+<o:importConstants type="com.esoft.jdraise.constants.RaiseLoanStatus" />
+<o:importConstants type="com.esoft.jdraise.constants.RaiseInvestStatus" />
+<o:importConstants type="com.esoft.jdraise.constants.LogisticsType" />
+<o:importConstants type="com.esoft.jdraise.constants.ShipAddressStatus" />
+<o:importFunctions type="java.lang.Math" var="math" />
+<o:importFunctions type="com.esoft.core.jsf.el.SpringSecurityELLibrary" var="role" />
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+			<title>#{empty title?siteVars.siteName:title}</title>
+			<meta name="keywords" content="#{keywords}" />
+			<meta name="renderer" content="webkit"/>
+			<meta name="description" content="#{description}" />
+			<link rel="shortcut icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
+		</f:facet>
+		<ui:fragment rendered="#{configHome.getConfigValue('enable_mobile_site') eq '1'}">
+		</ui:fragment>
+		<script>
+			window.CONTEXT_PATH = "#{request.contextPath}";
+		</script>
+		<h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/jquery.artDialog.js?skin=idialog"></script>
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/common.js"></script>
+		<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/raise/base.css" />
+		<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/raise/module.css" />
+		<script>
+			$(function(){
+				$(".sub-nav").hide();
+				$(".hd-nav li").hover(function(){
+					$(this).children("dl.sub-nav").slideDown('fast');	
+				},function(){
+					$(this).children("dl.sub-nav").slideUp('fast');
+				});
+				$("#sear-bg-input").keydown(function(e){
+					if(e.keyCode==13){
+						location.href='#{path}/raise/loanList?key='+$('#sear-bg-input').val();
+					}
+				}); 
+			});
+		</script>
+		<ui:insert name="head"></ui:insert>
+	</h:head>
+
+	<h:body>
+		<ui:include src="header.xhtml"></ui:include>
+		<p:ajaxStatus style="position:fixed; top:5px;text-align: center;width: 100%;">
+			<f:facet name="start">
+				<img src="#{tplVars.themeImagePath}/ajax-loading.gif" />
+			</f:facet>
+			<f:facet name="complete"></f:facet>
+		</p:ajaxStatus>
+		
+		<archer:archerMessages focus="false" showGlobalMessages="true" severity="0,2"></archer:archerMessages>
+		<ui:insert name="content">
+			<div class="main">content</div>
+		</ui:insert>
+		<ui:insert name="footcontent">
+			<ui:include src="footer.xhtml"></ui:include>
+		</ui:insert>
+	</h:body>
+</f:view>
+</html>

@@ -1,0 +1,378 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+<f:metadata>
+	<f:viewParam name="id" value="#{raisePaybackHome.id}"></f:viewParam>
+</f:metadata>
+<ui:define name="content">
+<ui:param name="payback" value="#{raisePaybackHome.instance}"></ui:param>
+<ui:param name="raiseLoan" value="#{payback.loan}"></ui:param>
+<f:event type="preRenderComponent" listener="#{raiseInvestHome.instance.setPayback(payback)}"></f:event>
+<style>
+	.addes > span {
+	  display: block;
+	}
+	.ztmain-box,.info-main-zjhb{
+		max-height:550px;
+	}
+	.aui_state_noTitle{
+		z-index:9999 !important;
+	}
+	.aui_state_lock{
+		z-index:8888 !important;
+	}
+</style>
+<script>
+	//<![CDATA[
+		
+		function show_address(){
+			art.dialog({
+				content:$("#add")[0],
+				  id: 'EF893L',
+				  lock: true
+			});
+			$('.aui_close').click(function () {
+				  $('.circle_bot').remove();
+				  $('body,html').animate({
+				    scrollTop: 0
+				  }, 400);
+				});
+		}
+		function cancel_address(){
+			$(".aui_close").click();
+			$("body,html").animate({
+					scrollTop:0
+			},400);
+		}
+		function oncomplete(xhr, status, args){
+			if(!args.validationFailed){
+				$(".addes input.checked").prop("checked","checked");
+				$("#form\\:address").val($(".addes input.checked").attr("id"));
+				cancel_address();
+			}
+		}
+		function selectedcard(){
+// 			if($(".bankcard.hover").length==0){
+// 				$.artDialog.tips("请选择银行卡");
+// 				return false;
+// 			}
+			return true;
+		}
+		function cancelAddCard(){
+			$(".add-card-div").hide();
+			$(".add-card-div").closest(".aui_state_lock").find(".aui_close").click();
+		}
+		function showAddCard(xhr, status, args){
+			if(!args.validationFailed){
+				$(".add-card-div").show();
+				$.artDialog({
+					content : document.getElementById('addCard'),
+					id : 'addCards',
+					fixed : true,
+					lock : true,
+				});
+			}
+		}
+		function savecard(xhr, status, args){
+			if(!args.validationFailed){
+				cancelAddCard();
+			}
+		}
+		function compareMoney(){
+			var address = false;
+			$(".addes input[name=address]").each(function(i, n){
+				if($(n).prop("checked")){
+					address = true;
+				}
+			});
+			if(!address){
+				$.artDialog.tips("请选择收货地址");
+				return false;
+			}
+			if(parseFloat($("#have-money").val()) < parseFloat($("#need-money").html())){
+				$.dialog.alert('余额不足，请先充值',
+				function() {
+					
+				});
+				return false;
+			}
+			return true;
+		}
+		function rechargeDialog(){
+			setTimeout(function(){
+			$.dialog.confirm('充值完成？',
+				function() {
+					location.reload(true);
+				});
+			}, 500);
+		}
+		$(function(){
+			$("body").on("click", ".bankcard", function(){
+				$(this).parent().find(".hover").removeClass("hover");
+				$(this).addClass("hover");
+			});
+			$(".addes input.checked").prop("checked","checked");
+			$("#form\\:address").val($(".addes input.checked").attr("id"));
+			$(".more").click(function(){
+				if($(this).html()=="显示全部"){
+					$(".morecon").css("height","auto");
+					$(this).html("收起");
+				} else if($(this).html()=="收起"){
+					$(".morecon").css("height",56);
+					$(this).html("显示全部");
+				}
+				
+			});
+			
+			$(".addes").on("change","input[type=radio][name=address]", function(){
+				$("#form\\:address").val($(this).attr("id"));
+			});
+		});
+//]]>
+</script>
+<div class="wrapper-central">
+<h:form id="form">
+	<div class="confirm-box ztmain cm-border">
+    	<div class="pay-tit"> 
+        	<h3>确认收货地址</h3>
+        </div>
+        <div class="addes">
+        	<h:panelGroup id="addressList">
+            <table>
+            	<f:event type="preRenderComponent" listener="#{shipAddressList.example.user.setId(loginUserInfo.loginUserId)}"></f:event>
+            	<f:event type="preRenderComponent" listener="#{shipAddressList.example.setStatus(ShipAddressStatus.NORMAL)}"></f:event>
+			    <f:event type="preRenderComponent" listener="#{shipAddressList.setPageSize(1000)}"></f:event>
+	        	<ui:repeat var="address" value="#{shipAddressList.lazyModelData}">
+	        		<tr>
+	        			<td align="center">
+	        				<input type="radio" name="address" id="#{address.id}" class="#{address.isDefault?'checked':''}"/>
+	        			</td>
+	        			<td class="add-detail">
+	        				<LABEL for="#{address.id}">#{address.area.name}&#160;#{address.address}&#160;#{address.name}&#160;&#160;#{address.isDefault?'(默认)':''}</LABEL>
+	        			</td>
+	        			<td class="update">
+	        				<h:commandLink styleClass="green" value="修改">
+	        					<p:ajax listener="#{shipAddressHome.clearAndsetId(address.id)}" update=":add" oncomplete="show_address()"></p:ajax>
+	        				</h:commandLink>
+	        			</td>
+	        		</tr>
+	        	</ui:repeat>
+            </table>
+            <h:inputText value="#{raiseInvestHome.address}" id="address" style="display:none;"></h:inputText>
+             <h:commandLink value="+使用新地址" styleClass="green">
+         			<p:ajax listener="#{shipAddressHome.clear()}" update=":add" oncomplete="show_address()"></p:ajax>
+         		</h:commandLink>
+            </h:panelGroup>
+        </div>
+        <div class="pay-detail">
+            <div class="pay-tit"> 
+                <h3>确认支持详情</h3>
+            </div>
+            <div class="supdtl">
+              <div class="supdtl-head">
+                <span class="pos1">项目名称</span>
+                <span class="pos2">回报内容</span>
+                <span class="pos3">支持金额</span>
+                <span class="pos4">配送费用</span>
+                <span class="pos5">预计回报发送时间</span>
+              </div>
+              <div class="supdtl-cont">
+                <div class="supdtl-cont-top">
+                  <span class="pos1">
+                  	<a href="#{path}/raise/loanDetail/#{raiseLoan.id}" target="_blank">
+                  	<img src="#{path}#{raiseLoan.photo}" alt="#{raiseLoan.title}"/></a>
+                  	<span>
+                  		<a href="#{path}/raise/loanDetail/#{raiseLoan.id}" target="_blank" class="color00">#{raiseLoan.title}</a>
+                  	</span>
+                  </span>
+                  <span class="pos2">
+                  	<span class="morecon">#{payback.title}：<br/>
+                  		#{payback.description}</span>
+                  	<span class="more">显示全部</span>
+                  </span>
+                  <span class="pos3">￥#{payback.money}</span>
+                  <span class="pos4">#{payback.logistics eq LogisticsType.type0?'无须配送':'免运费'}</span>
+                  <span class="pos5">
+                  	<ui:fragment rendered="#{payback.payTime gt 0}">项目成功结束后#{payback.payTime}天</ui:fragment>
+		             <h:outputText rendered="#{payback.payTime eq 0}">项目成功结束后立即回报</h:outputText>
+                  </span>
+                </div>
+                <div class="supdtl-cont-bot">给项目发起人留言
+                	<h:inputText value="#{raiseInvestHome.instance.message}" maxlength="400"></h:inputText>
+                </div>
+              </div>
+            </div> 
+            
+            <div class="pay-submit">
+				<div>账户余额：<span>
+					<h:outputText value="#{billStatistics.getBalanceByUserId(loginUserInfo.loginUserId)}">
+						<f:convertNumber type="currency" />
+					</h:outputText>
+					<input id="have-money" value="#{billStatistics.getBalanceByUserId(loginUserInfo.loginUserId)}" type="hidden"></input>
+				</span><a href="#{path}/raise/user/recharge" class="recharge" target="_blank" onclick="rechargeDialog()">充值</a></div>
+				<div>总计金额：<span>￥<label id="need-money">#{payback.money}</label></span></div>
+				<f:event type="preRenderComponent" listener="#{facesUtil.setSessionAttribute('returnPage','pretty:raiseUserCenter')}"></f:event>
+         		<h:commandButton styleClass="btn-effect-blue btn-sub w217" value="确认付款" action="#{raiseInvestHome.buy}" onclick="return compareMoney()"></h:commandButton>
+        	</div>   
+    </div>
+    </div>
+ </h:form>   
+</div>
+<!--central end-->
+
+<h:form id="add" style="display:none;">
+	<ui:param name="address" value="#{shipAddressHome.instance}"></ui:param>
+	<div class="ztmain-bg" onclick="cancel_address()"></div>
+    <div class="" style="width:1030px;">
+        <div class="info-main-zjhb">
+        	<p class="zjhb-tit">添加收件地址</p>
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    收件人：<label>*</label>
+                </div>
+                <div class="item-con fr">
+                    <h:inputText value="#{address.name}" styleClass="fo-inp input-p-sum cm-border" required="true" label="收件人" maxlength="20"></h:inputText>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    手机：<label>*</label>
+                </div>
+                <div class="item-con fr">
+                    <h:inputText value="#{address.mobile}" styleClass="fo-inp input-p-n cm-border" required="true" label=" 手机" maxlength="11">
+                    	<archer:validateInputRule ruleId="input.mobile"></archer:validateInputRule>
+                    </h:inputText>
+                </div>
+            </div>
+            <div class="item clear">
+            	<div class="item-tit fl font16">
+                	所在地：<label>*</label>
+                </div>
+                <div class="item-con fr">
+                	<f:event listener="#{areaHome.initByCity(address.area)}" type="preRenderComponent" />
+					<h:selectOneMenu  styleClass="cm-border" value="#{areaHome.selectedProvince}" converter="archer.EntityConverter"  >
+						<f:selectItems value="#{areaHome.allProvinces}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+						<f:ajax listener="#{areaHome.findAllCities}" render="jobareaSelect"></f:ajax>
+					</h:selectOneMenu>
+					<h:panelGroup id="jobareaSelect" >
+						<h:selectOneMenu  value="#{address.area}" converter="archer.EntityConverter" styleClass="cm-border" rendered="#{not empty areaHome.allCities}">
+							<f:selectItems value="#{areaHome.allCities}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+						</h:selectOneMenu>
+					</h:panelGroup>
+                </div>
+            </div>
+            <div class="item clear">
+            	<div class="item-tit fl font16">
+                	详细地址：<label>*</label>
+                </div>
+                <div class="item-con fr">
+                	<h:inputText value="#{address.address}" styleClass="fo-inp input-p-n cm-border" required="true" label="详细地址" maxlength="100"></h:inputText>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    邮编：
+                </div>
+                <div class="item-con fr">
+                    <h:inputText value="#{address.zipCode}" styleClass="fo-inp input-p-sum cm-border"  label="邮编" maxlength="6">
+                    	<f:validateRegex pattern="^([0-9]{6}|)$" />
+                    </h:inputText>
+                </div>
+            </div>
+<!--              <div class="item clear"> -->
+<!--                 <div class="item-tit fl font16"> -->
+<!--                     银行卡： -->
+<!--                 </div> -->
+<!--                 <div class="item-con fr" style="padding-top: 12px;"> -->
+<!--                     <h:panelGroup id="bankcardlist"> -->
+<!--                     	<f:event type="preRenderComponent" listener="#{bankCardList.setBankCardListbyLoginUser(null)}"></f:event> -->
+<!--                     	<ui:repeat var="bankcard" value="#{bankCardList.bankCardListbyLoginUser}"> -->
+<!--                     		<ui:param name="bcnL" value="#{bankcard.cardNo.length()}"></ui:param> -->
+<!--                     		<h:commandLink styleClass="bankcard #{address.bankcard.id eq bankcard.id?'hover':''}" value="#{bankcard.bank}：#{fn:substring(bankcard.cardNo,0,4)} **** **** #{fn:substring(bankcard.cardNo,bcnL-4,bcnL)}"> -->
+<!--                     			<f:ajax listener="#{address.setBankcard(bankcard)}"></f:ajax> -->
+<!--                     		</h:commandLink> -->
+<!--                     	</ui:repeat> -->
+<!--                     </h:panelGroup> -->
+<!--                     <h:commandLink value="+增加银行卡" styleClass="add-bankcard"> -->
+<!--                     	<p:ajax listener="#{bankCardHome.instance.setId(null)}" update=":addCard" oncomplete="showAddCard(xhr, status, args)"></p:ajax> -->
+<!--                     </h:commandLink> -->
+<!--                     <br/> -->
+<!--                     <div>银行卡信息用于资金类回报及项目失败时打款。</div> -->
+<!--                 </div> -->
+<!--             </div> -->
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    默认地址：
+                </div>
+                <div class="item-con fr">
+                   <h:selectOneRadio value="#{address.isDefault}">
+                   		<f:selectItem itemLabel="是" itemValue="true"/>
+                   		<f:selectItem itemLabel="否" itemValue="false"/>
+                   </h:selectOneRadio>
+                </div>
+            </div>
+            <div class="mar-top50">
+            	 <h:commandLink value="保存" styleClass="save-btn mar300 font18 add-b-h" onclick="return selectedcard();">
+	            	<p:ajax listener="#{shipAddressHome.saveOrUpdate}" process="@form" oncomplete="oncomplete(xhr, status, args)" update=":form:addressList"></p:ajax>
+	            </h:commandLink>
+            	<a class="save-btn font18" href="javascript:void(0)" onclick="cancel_address()">取消</a>
+            </div>
+        </div>
+    </div>
+</h:form>
+<!-- <h:form id="addCard"> -->
+<!-- 	<ui:param name="bankcard" value="#{bankCardHome.instance}"></ui:param> -->
+<!-- 	 <div class="add-card-div"> -->
+<!-- 	 		<div class="add-card-title">添加银行卡</div> -->
+<!-- 	 		<table> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<th>开户名</th> -->
+<!-- 	 				<td> -->
+<!-- 	 					与收件人姓名相同 -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<th>选择银行<label>*</label></th> -->
+<!-- 	 				<td> -->
+<!-- 	 					<div class="item-con"> -->
+<!-- 		 					<h:selectOneMenu value="#{bankcard.bankNo}" styleClass="cm-border"> -->
+<!-- 								<f:selectItems value="#{rechargeList.rechargeBankCards}" var="bc"  itemLabel="#{bc.bankName}" itemValue="#{bc.no}" /> -->
+<!-- 							</h:selectOneMenu> -->
+<!-- 						</div> -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<th>开户行<label>*</label></th> -->
+<!-- 	 				<td> -->
+<!-- 	 					<h:inputText value="#{bankcard.name}" styleClass="fo-inp input-p-n cm-border" required="true" label="开户行" maxlength="100"></h:inputText> -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<th>银行卡号<label>*</label></th> -->
+<!-- 	 				<td> -->
+<!-- 	 					<h:inputText value="#{bankcard.cardNo}" styleClass="fo-inp input-p-n cm-border" onkeyup="this.value=this.value.replace(/\D/g,'')" required="true" label="开户行" maxlength="100"> -->
+<!-- 	 						<f:validateLength minimum="5" maximum="40"></f:validateLength> -->
+<!-- 	 					</h:inputText> -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<td colspan="2"> -->
+<!-- 	 					<h:commandLink value="保存" styleClass="save-btn mar300 font18 add-b-h"> -->
+<!-- 			            	<p:ajax listener="#{bankCardHome.save}" process="@form" oncomplete="savecard(xhr, status, args)" update=":add:bankcardlist"></p:ajax> -->
+<!-- 			            </h:commandLink> -->
+<!-- 			            <a class="save-btn font18" href="javascript:void(0)" onclick="cancelAddCard()">取消</a> -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 		</table> -->
+<!-- 	 </div> -->
+<!-- </h:form> -->
+</ui:define>
+</ui:composition>

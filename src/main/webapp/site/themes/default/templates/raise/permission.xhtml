@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+<ui:param name="path" value="#{request.contextPath}"></ui:param>
+<o:importFunctions type="java.lang.Math" var="math" />
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+			<meta name="renderer" content="webkit"/>
+			<title>#{siteVars.siteName}</title>
+		</f:facet>
+		<h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/jquery.artDialog.js?skin=idialog"></script>
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/common.js"></script>
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/timer.js"></script>
+		<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/raise/base.css" />
+		<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/raise/login.css" />
+	</h:head>
+	<h:body style="background:#f3f3f3;">
+		<archer:archerMessages focus="false" showGlobalMessages="true" severity="0,2"></archer:archerMessages>
+		<f:event type="preRenderView" listener="#{userHome.setId(loginUserInfo.loginUserId)}"></f:event>
+		<div class="tipper" style="box-shadow: none;">
+			<div class="tip clear">
+		    	<div class="fl"><a href="#{path}/raise"><img src="#{tplVars.themeImagePath}/raise/logo.png" /></a></div>
+<!-- 		        <div class="fr"> -->
+<!-- 		        	<a class="zh" href="javascript:void(0)">已有账号？</a> -->
+<!-- 		            <a class="dl" href="#{path}/raise/login">直接登录</a> -->
+<!-- 		        </div> -->
+		    </div>
+		</div>
+		<div class="lg-main permission-lg-main">
+			<div class="permission-lg-main-con">
+		    	<div class="reg-div permission-reg-div">
+		    		<div class="reg-div-bg"></div>
+		    		<h:form id="form" style="position:absolute;">
+		        	<dl class="reg-dl">
+		        		<!-- 这个页面是易宝的 -->
+		            	<dt>实名认证</dt>
+		                <dd>
+		                	<span>用户名：</span>
+		                	#{userHome.instance.username}
+		                </dd>
+		               	<dd><span>真实姓名：</span>
+							<h:inputText label="真实姓名"
+									maxlength="20" styleClass="text" id="realname"
+									required="true" value="#{userHome.instance.realname}">
+									<f:ajax event="blur" render="@this"></f:ajax>
+								</h:inputText>
+		               	</dd>
+		                <dd><span>身份证号：</span>
+		                	<h:inputText label="身份证号" styleClass="text"
+										id="idCard" required="true" value="#{userHome.instance.idCard}"
+										maxlength="50">
+										<archer:validateInputRule ruleId="input.idCard"></archer:validateInputRule>
+										<archer:validateIdCardAlreadyExist></archer:validateIdCardAlreadyExist>
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+		                </dd>
+		                <dd><span>邮箱：</span>
+		                	<h:inputText id="email2" label="邮箱" rendered="#{configHome.getConfigValue('ipspay_enable') != '1'}"
+								styleClass="text" maxlength="100" required="true"
+								value="#{userHome.instance.email}">
+								<archer:validateInputRule ruleId="input.email"></archer:validateInputRule>
+								<archer:validateAlreadyExist />
+								<f:ajax event="blur"></f:ajax>
+							</h:inputText>
+		                </dd>
+		                <dd><span>性别：</span>
+		                	<h:selectOneMenu value="#{userHome.instance.sex}" required="true" styleClass="sex-select">
+								<f:selectItem itemLabel="#{userMsg.male}" itemValue="M"></f:selectItem>
+                           		<f:selectItem itemLabel="#{userMsg.female}" itemValue="F"></f:selectItem>
+							</h:selectOneMenu>
+		                </dd>
+		                <dd>
+		                	<f:event type="preRenderComponent" listener="#{facesUtil.setSessionAttribute('returnPage','pretty:raiseUserCenter')}"></f:event>
+		                	<h:commandLink value="实名认证" styleClass="lg-btn" action="#{userHome.getInvestorPermission}" onclick="return confirm('请再次核查信息，确认后不可修改')" ></h:commandLink>
+		                </dd>
+		            </dl>
+		            </h:form>
+		        </div>
+		    </div>
+		</div>
+		<div class="lg-footer">
+			<p class="font12">©2014 北京网信众筹网络科技有限公司 zhongchou.cn 版权所有     京公网安备11010502026064 | 京ICP备14016844号</p>
+		</div>
+	</h:body>
+</f:view>
+</html>

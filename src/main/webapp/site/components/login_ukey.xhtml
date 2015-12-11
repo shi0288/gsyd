@@ -1,0 +1,183 @@
+
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head>
+		<style>
+body {
+	background-color: #F7F7F7;
+	font-size: 12px;
+}
+
+.loginPanel {
+	width: 500px;
+	margin: 0 auto;
+	margin-top: 180px;
+}
+
+#verifyCode {
+	vertical-align: middle;
+}
+</style>
+		<link href="#{request.contextPath}/include/css/admin.css"
+			type="text/css" rel="stylesheet" />
+
+	</h:head>
+	<div id="prompt" style="color: red; text-align: center;">请插入PSA</div>
+	<form action="#{request.contextPath}/login" method="post"
+		id="IID_SecureWeb_Form_Signin" accept-charset="UTF-8">
+	<p:panel header="用户登录" id="loginPanel" styleClass="loginPanel">
+		<ui:fragment
+			rendered="#{ not empty requestScope['SPRING_SECURITY_LAST_EXCEPTION'] and requestScope['SPRING_SECURITY_LAST_EXCEPTION'].message ne 'Authentication method not supported: GET'}">
+			<script>
+            $(function(){
+	            growl.renderMessage({summary:'错误', detail:'#{requestScope['SPRING_SECURITY_LAST_EXCEPTION'].message}', severity: 'error'});            	
+            });
+            </script>
+			<!--             <li style="color: red;"> -->
+			<!--                 #{requestScope['SPRING_SECURITY_LAST_EXCEPTION'].message} -->
+			<!--             </li> -->
+		</ui:fragment>
+		<ui:fragment
+			rendered="#{not empty request.getParameter('spring-security-redirect')}">
+			<input type="hidden" name="spring-security-redirect"
+				value="#{request.getParameter('spring-security-redirect')}"></input>
+		</ui:fragment>
+		<!--         	<input type="hidden" name="spring-security-fail-redirect" value="/dfdfd"></input> -->
+
+		<!--应用名称-->
+		<input id="IID_SecureWeb_I_ApplicationName"
+			name="IID_SecureWeb_I_ApplicationName" value="jdp2p" type="hidden" />
+		<!--用户名-->
+		<input id="IID_SecureWeb_I_UserName" name="IID_SecureWeb_I_UserName"
+			size="13" maxlength="50" value="" type="hidden" />
+		<!--序列号-->
+		<input id="IID_SecureWeb_I_SerialNumber"
+			name="IID_SecureWeb_I_SerialNumber" size="13" maxlength="50"
+			onpropertychange="psaok();" value="" type="hidden" />
+		<!--随机数-->
+		<input id="IID_SecureWeb_I_Random" name="IID_SecureWeb_I_Random"
+			size="5" maxlength="32" type="hidden" value="#{loginUserInfo.loginRandomCode}" />
+		<input id="IID_SecureWeb_I_Extra" name="IID_SecureWeb_I_Extra"
+			value="" type="hidden" />
+		<!--MD5Result-->
+		<input id="IID_SecureWeb_I_MD5Result" name="IID_SecureWeb_I_MD5Result"
+			size="32" maxlength="32" value="" type="hidden" />
+		<!--返回操作结果，0表示成功，其他数值表示错误代码-->
+		<input id="IID_SecureWeb_I_Status" name="IID_SecureWeb_I_Status"
+			size="3" maxlength="250" onpropertychange="fillok();" type="hidden"
+			value="" />
+		<!--网站的登陆方式：是否自动登录。auto或1表示自动登录，其他表示需点击登录按钮-->
+		<input id="IID_SecureWeb_I_SigninType"
+			name="IID_SecureWeb_I_SigninType" value="0" type="hidden" />
+
+		<h:panelGrid columns="2">
+			<h:outputLabel value="用户名"></h:outputLabel>
+			<p:inputText label="用户名" id="j_username" required="true"></p:inputText>
+
+			<h:outputLabel value="密码"></h:outputLabel>
+			<p:password id="j_password"></p:password>
+			<h:outputLabel value="验证码"
+				rendered="#{sessionScope.need_validate_code or configHome.getConfigValue('login_fail_max_times') eq '0'}"></h:outputLabel>
+			<h:outputLabel
+				rendered="#{sessionScope.need_validate_code or configHome.getConfigValue('login_fail_max_times') eq '0'}">
+				<p:inputText id="captcha_input" style="width:60px;"></p:inputText>
+				<img alt="点击刷新" id="verifyCode"
+					src="#{request.contextPath}/verifyCodeServlet"
+					onclick="this.src='#{request.contextPath}/verifyCodeServlet?'+new Date().getTime()" />
+			</h:outputLabel>
+
+			<p:spacer></p:spacer>
+			<p:outputPanel>
+				<p:commandButton type="button" id="IID_SecureWeb_B_Signin" value="登录"></p:commandButton>
+			</p:outputPanel>
+		</h:panelGrid>
+		<div id="IID_SecureWeb_Support" class="login-logo">
+			<img src="#{request.contextPath}/include/images/admin/login-logo.jpg"
+				style="width:135px;height:120px;" />
+		</div>
+		<div class="clear"></div>
+		<f:facet name="footer">
+            
+             (c) Copyright Archer Development team. 2010-2015.  All rights reserved.
+        </f:facet>
+	</p:panel>
+	</form>
+	<SCRIPT LANGUAGE="JavaScript">
+	//<![CDATA[
+
+function disablePrimeBtn(id){
+	var btn =$('#'+id); 
+	btn.children('input').attr('disabled','disabled');
+	btn.attr('aria-disabled',true);
+	btn.addClass("ui-state-disabled");	
+}
+function enablePrimeBtn(id){
+	var btn =$('#'+id); 
+	btn.children('input').attr('disabled',false);
+	btn.attr('aria-disabled',false);
+	btn.removeClass("ui-state-disabled");
+}
+
+//监测psa插入
+function psaok()
+{
+	if (document.getElementById('IID_SecureWeb_I_SerialNumber').value!='')
+	{
+		enablePrimeBtn('IID_SecureWeb_B_Signin');
+		document.getElementById('prompt').innerHTML="PSA已插入,请点击登录";
+	}
+	if  (document.getElementById('IID_SecureWeb_I_SerialNumber').value=='')
+	{
+		disablePrimeBtn('IID_SecureWeb_B_Signin');
+		document.getElementById('prompt').innerHTML="请插入PSA";
+	}
+}
+//操作结果，根据 IID_SecureWeb_I_Status 的显示相应提示。其他状态代码请参阅开发手册
+function fillok()
+{
+	var fillresult=document.getElementById('IID_SecureWeb_I_Status').value;
+	switch (fillresult)
+	{
+		case '0':
+			document.getElementById('IID_SecureWeb_Form_Signin').submit();	
+			break;
+		case '301':
+			document.getElementById('prompt').innerHTML='接口不存在，PSA需要升级。 错误代码：301';
+			break;
+		case '302':
+			document.getElementById('prompt').innerHTML='应用名称不存在（未创建）。 错误代码：302';
+			break;
+		case '303':
+			document.getElementById('prompt').innerHTML='应用名称与管理密码不匹配。 错误代码：303';
+			break;
+		case '304':
+			document.getElementById('prompt').innerHTML='页面代码不符合接口规范。 错误代码：304';
+			break;
+		case '305':
+			document.getElementById('prompt').innerHTML='应用名称已经存在。 错误代码：305';
+			break;
+		case '306':
+			document.getElementById('prompt').innerHTML='输入元素值不能为空。 错误代码：306';
+			break;
+		case '307':
+			document.getElementById('prompt').innerHTML='URL不符合格式要求。 错误代码：307';
+			break;	
+		case '308':
+			document.getElementById('prompt').innerHTML='非预设登陆网站。 错误代码：308';
+			break;
+		case '309':
+			document.getElementById('prompt').innerHTML='PSA内部错误。 错误代码：309';
+			break;	
+	}
+}
+
+$(function(){
+	psaok();
+});
+//]]>
+</SCRIPT>
+
+</f:view>

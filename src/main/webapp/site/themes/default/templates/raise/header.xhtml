@@ -1,0 +1,67 @@
+<ui:component xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+	<link type="text/css" rel="stylesheet" href="#{tplVars.themeStylePath}/raise/header.css" />
+	<div class="wrapper-hd  zc-wrapper-hd">
+	<div class="header clear">
+    	<div class="logo fl"><a href="#{path}/raise"><img src="#{tplVars.themeImagePath}/raise/logo.png"/></a></div>
+        <ul class="hd-nav fl">
+        	<li><a href="#{path}/raise">首页</a></li>
+            <li><a href="#{path}/raise/loanList">浏览项目</a></li>
+<!--             <li><a href="#">我的众筹</a> -->
+<!--             	<dl class="sub-nav" style="display: none;"> -->
+<!--                 	<dd><a href="#">我的项目</a></dd> -->
+<!--                     <dd><a href="#">个人资料</a></dd> -->
+<!--                 </dl> -->
+<!--             </li> -->
+            <li><a href="#{path}/raise/loanEdit">发起项目</a></li>
+            <li><a href="#">新手指引</a></li>
+        </ul>
+        <div class="fr sear-log">
+        	<span class="sear-bg">
+            	<input type="text" placeholder="请输入关键字搜索" class="sear-bg-input" id="sear-bg-input"/>
+                <a href="javascript:void(0)" class="ser-btn" id="ser-btn" onclick="location.href='#{path}/raise/loanList?key='+$('#sear-bg-input').val()"></a>
+            </span>
+            <ui:fragment rendered="#{empty loginUserInfo.loginUserId}">
+	            <a href="#{path}/raise/membersLogin" class="lbt log-btn lbt-hover">登录</a>
+	            <a href="#{path}/raise/register" class="lbt reg-btn">注册</a>
+            </ui:fragment>  
+            <ui:fragment rendered="#{not empty loginUserInfo.loginUserId}">
+            	<f:event type="preRenderComponent" listener="#{userHome.setId(loginUserInfo.loginUserId)}"></f:event>
+            	<ui:param name="user" value="#{userHome.instance}"></ui:param>
+            	<style>.sear-log{ margin-top:0;}</style>
+	            <span class="hd-right">
+                	<ul class="hover01">
+	                	<li>
+		                	<h:panelGroup id="photoHeader">
+								<ui:fragment rendered="#{not empty user.photo}">
+									<img class="icon" src="#{path}#{user.photo}" />
+								</ui:fragment>
+								<ui:fragment rendered="#{empty user.photo}">
+									<img class="icon" src="#{tplVars.themeImagePath}/raise/pic.png" />
+								</ui:fragment>
+							</h:panelGroup>
+		                	<i></i>
+	                    	<dl class="hover02">
+	                        	<dd><i class="ic-h1"></i><a href="#{path}/raise/user/center">发起的项目</a></dd>
+	                            <dd><i class="ic-h2"></i><a href="#{path}/raise/user/centerLike">喜欢的项目</a></dd>
+	                            <dd><i class="ic-h3"></i><a href="#{path}/raise/user/centerSupport">支持的项目</a></dd>
+<!-- 	                            <dd><i class="ic-h4"></i><a href="#">消息中心</a></dd> -->
+	                            <dd><i class="ic-h5"></i><a href="#{path}/raise/user/info">个人设置</a></dd>
+	                            <dd><i class="ic-h7"></i><a href="#{path}/raise/user/raiser/loanList">发起者后台</a></dd>
+	                            <dd><i class="ic-h8"></i><a href="#{path}/raise/user/recharge">资金管理</a></dd>
+	                            <dd><i class="ic-h6"></i><a href="#{request.contextPath}/user/logout?spring-security-redirect=/raise">退出</a></dd>
+	                        </dl>
+	                    </li>
+	                </ul>
+	            </span>
+            </ui:fragment>
+        </div>
+    </div>
+</div>
+
+</ui:component>

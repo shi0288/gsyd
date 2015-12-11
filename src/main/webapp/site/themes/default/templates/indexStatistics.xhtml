@@ -1,0 +1,95 @@
+<ui:component xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:sec="http://www.springframework.org/security/facelets/tags">
+
+
+	<!-- <div class="tz">
+		<div class="tz-con clearfix">
+			<ul>
+				<li><i class="tz-img11 icon"></i>投资人数量：<span>#{investStatistics.getAllInvestUserNumber()}</span></li>
+				<li><i class="tz-img22 icon"></i>累计成功投资金额：<span><h:outputText value="#{investStatistics.getAllInvestsMoney()}">
+							<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+						</h:outputText></span></li>
+				<li><i class="tz-img33 icon"></i>投资人的收益：<span><h:outputText value="#{investStatistics.getAllInvestsInterest()}">
+							<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+						</h:outputText></span></li>
+			</ul>
+		</div>
+	</div>
+	tz end -->
+
+	<!-- <div class="lc">
+		<div class="lc-con clearfix">
+			<p class="lc-p">截止当前理财快线累计成交金额（元）</p>
+			<div class="num">
+
+				<ui:param name="allInvestsMoney" value="#{indexStatistics.getAllInvestsMoney()}" />
+
+				<ui:repeat var="ym" value="#{allInvestsMoney.get(0)}" varStatus="i">
+					<a href="#" class="a0#{ym} aa"></a>
+					<ui:fragment rendered="#{i.last}">
+						<span>亿</span>
+					</ui:fragment>
+				</ui:repeat>
+				<ui:repeat var="wm" value="#{allInvestsMoney.get(1)}" varStatus="i">
+					<a href="#" class="a0#{wm} aa"></a>
+					<ui:fragment rendered="#{i.last}">
+						<span>万</span>
+					</ui:fragment>
+				</ui:repeat>
+				<ui:repeat var="gm" value="#{allInvestsMoney.get(2)}" varStatus="i">
+					<a href="#" class="a0#{gm} aa"></a>
+				</ui:repeat>
+			</div>
+			<ul class="lc-ul">
+				<li><i class="list-icon i01"></i>
+					<p>
+						<span><h:outputText value="#{indexStatistics.getInvestsMoneyByYesterday()/10000}">
+								<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+							</h:outputText></span><b>万</b><br />昨日投资
+					</p></li>
+				<li><i class="list-icon i02"></i>
+					<p>
+						<span><h:outputText value="#{indexStatistics.getInvestsMoneyByToday()/10000}">
+								<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+							</h:outputText></span><b>万</b><br />今日投资
+					</p></li>
+				<li><i class="list-icon i03"></i>
+					<p>
+						<span><h:outputText value="#{investStatistics.getAllInvestsMoney()/10000}">
+								<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+							</h:outputText>
+						</span>
+						<b>万</b><br />
+						累计投资
+					</p></li>
+				<li><i class="list-icon i04"></i>
+					<p>
+						<span><h:outputText value="#{investStatistics.getAllInvestsInterest()/10000}">
+							<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+						</h:outputText></span><b>万</b><br />已赚取收益
+					</p></li>
+			</ul>
+		</div>
+	</div>
+	lc end -->
+	
+	<div class="part2-r fr">
+					<div class="pt2-rt">
+						<h4>融金数据</h4>
+						<p>
+							累计成交：<span><h:outputText value="#{loanStatistics.getLoanMoney()/10000}">
+							<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+						</h:outputText></span>万元
+						</p>
+					</div>
+					<ul class="clearfix">
+						<li><span><h:outputText value="#{investStatistics.getAllInvestsMoney()/10000}">
+								<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+							</h:outputText></span>万元<br />累计投资总额</li>
+						<li><span><h:outputText value="#{investStatistics.getAllInvestsInterest()/10000}">
+							<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
+						</h:outputText></span>万元<br />累计赚取收益</li>
+					</ul>
+				</div>
+				
+</ui:component>

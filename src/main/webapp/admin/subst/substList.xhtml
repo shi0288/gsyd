@@ -1,0 +1,102 @@
+<ui:composition template="/admin/templates/ui.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:composite="http://java.sun.com/jsf/composite/primefaces"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:o="http://omnifaces.org/ui"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:sec="http://www.springframework.org/security/facelets/tags">
+	
+<!-- 	<f:metadata> -->
+<!-- 		<f:viewParam name="loanStatus" value="#{substList.example.status}"></f:viewParam> -->
+<!-- 	</f:metadata> -->
+	
+    <ui:define name="content">
+<!--     <o:importConstants type="com.esoft.jdp2p.loan.LoanConstants.LoanStatus" /> -->
+    <div class="entry">
+    	<p:toolbar>
+            <p:toolbarGroup>
+	            <h:outputLabel style="padding-left: 15px;" 
+	            	value="#{commonMsg.currentPositionLabel} 分站管理 "></h:outputLabel>
+            </p:toolbarGroup>
+            <p:toolbarGroup align="right">
+	            <p:separator />  
+	            <p:button value="新增分站" outcome="/admin/subst/addSubst"></p:button>
+            </p:toolbarGroup>
+        </p:toolbar>
+        
+        <h:form id="form"> 
+        	<p:spacer></p:spacer> 
+                <p:panel id="filters">
+                    <p:inputText id="searchId" value="#{substList.example.id}"></p:inputText>
+                    <p:inputText id="searchName" value="#{substList.example.name}"></p:inputText>
+                    <p:commandButton update="dataTable" process="filters"
+                        value="#{commonMsg.searchLabel}"></p:commandButton>
+                </p:panel>
+                <p:watermark for="searchId" value="#{commonMsg.IDLabel}" />  
+                <p:watermark for="searchName" value="分站名称"></p:watermark>
+            
+            <p:spacer></p:spacer> 
+
+              <p:dataTable lazy="true" id="dataTable" value="#{substList.lazyModel}" var="subst" 
+                paginator="true" paginatorPosition="bottom" rows="15" currentPageReportTemplate="#{commonMsg.pageReportTemplate}"
+                sortBy="subst.createTime" 
+                paginatorTemplate="#{commonMsg.paginatorTemplate}" 
+                emptyMessage="#{commonMsg.noResultMsg}">
+                <p:column sortBy="subst.id" width="50" >
+                	<f:facet name="header" >
+                		<h:outputText value="#{commonMsg.IDLabel}"></h:outputText>
+                	</f:facet>
+                    <h:outputText value="#{subst.id}"></h:outputText>
+                </p:column>
+                <p:column width="120">
+                	<f:facet name="header" >
+                		<h:outputText value="分站名称"></h:outputText>
+                	</f:facet>
+                    <h:outputText value="#{subst.name}" title="#{subst.name}"></h:outputText>
+                </p:column>
+                <p:column width="120">
+                	<f:facet name="header" >
+                		<h:outputText value="创建时间"></h:outputText>
+                	</f:facet>
+                    <h:outputText value="#{subst.createTime}" title="#{subst.createTime}"></h:outputText>
+                </p:column>
+                <p:column width="120">
+                	<f:facet name="header" >
+                		<h:outputText value="分站管理员"></h:outputText>
+                	</f:facet>
+                    <h:outputText value="#{subst.userId}" title="#{subst.userId}"></h:outputText>
+                </p:column>
+                <p:column width="120">
+                	<f:facet name="header" >
+                		<h:outputText value="描述"></h:outputText>
+                	</f:facet>
+                    <h:outputText value="#{subst.description}" title="#{subst.description}" ></h:outputText>
+                </p:column>
+                
+                <p:column width="60" exportable="false">
+                	<f:facet name="header" >
+                		<h:outputText value="操作"></h:outputText>
+                	</f:facet>
+                	<h:link value="编辑" outcome="/admin/subst/substEdit?id=#{subst.id}"></h:link>
+	                |
+	                <p:commandLink actionListener="#{substHome.deleteSubst(subst.id)}" onstart="return confirm('确定要删除该分站吗？');"  update="dataTable"
+						value="删除" process="@this">
+                    </p:commandLink>
+	                 
+                </p:column>
+                
+                <f:facet name="footer"> 
+					<p:commandButton value="导出Excel" ajax="false">
+						<p:dataExporter target="dataTable" type="xls" 
+							fileName="loans" pageOnly="false"></p:dataExporter>
+					</p:commandButton>
+ 		        </f:facet>
+				</p:dataTable>
+        </h:form>
+      </div>
+    </ui:define>
+</ui:composition>

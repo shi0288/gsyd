@@ -1,0 +1,94 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+<script>
+	$(function(){
+		$(".wrapper-central").on("mouseover",".invest-operation-payback",function(){
+			$(this).next().show();
+		}).on("mouseout",".invest-operation-payback",function(){
+			$(this).next().hide();
+		});
+	});
+</script>
+<div class="wrapper-central">
+	<div class="person-set ztmain">
+    	<p class="tel font24">发起者后台</p>
+        <div class="ad-set-menu fl">
+        	<ul>
+            	<li><a href="#{path}/raise/user/raiser/loanList">项目列表</a></li>
+                <li><a href="#{path}/raise/user/raiser/shipList">发货管理</a></li>
+                <li class="current-ad-set"><a href="javascript:void(0)">未发布项目</a></li>
+            </ul>
+        </div>
+        <h:form>
+        <div class="fr">
+        	<div class="ad-set-con-total main-birder">
+            	<div class="ad-set-tit">未发布项目&#160;&#160;<span>编辑、优化、状态</span></div>
+                <p class="ad-set-bg font16 colorff">详细清单</p>
+                <f:event type="preRenderComponent" listener="#{raiseLoanList.example.user.setId(loginUserInfo.loginUserId)}"></f:event>
+                 <ui:param name="restriction" value="#{'(rl.status=\''}#{RaiseLoanStatus.DRAFT}#{'\' or rl.status=\''}#{RaiseLoanStatus.WAITING_VERIFY}#{''}#{'\' or rl.status=\''}#{RaiseLoanStatus.VERIFY_FAIL}#{'\')'}"></ui:param>
+		   		<f:event type="preRenderComponent" listener="#{raiseLoanList.addRestriction(restriction)}"></f:event>
+	            <f:event type="preRenderComponent" listener="#{raiseLoanList.addOrder('rl.commitTime','desc')}"></f:event>
+	            <h:panelGroup id="dataTable" style="display:block;">
+                <table class="detail-list">
+                	<colgroup>
+                		<col width="228"/>
+                		<col width="93"/>
+                		<col width="81"/>
+                		<col width="71"/>
+                		<col width="100"/>
+                	</colgroup>
+                	<tbody><tr><td>名称</td><td>创建时间</td><td>当前状态</td><td>目标额</td><td>操作</td></tr>
+	                	<ui:repeat var="raiseLoan" value="#{raiseLoanList.lazyModelData}">
+	                    <tr>
+	                    	<td><a href="#{path}/raise/loanDetail/#{raiseLoan.id}">#{raiseLoan.title}</a></td>
+	                    	<td><h:outputText value="#{raiseLoan.createTime}"><f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" /></h:outputText></td>
+	                    	<td>
+	                    		<h:outputText rendered="#{raiseLoan.status ne RaiseLoanStatus.VERIFY_FAIL}" value="#{dictUtil.getValue('raise_loan_status',raiseLoan.status)}"></h:outputText>
+	                    		<ui:fragment rendered="#{raiseLoan.status eq RaiseLoanStatus.VERIFY_FAIL}">
+	                    			<div class="center-invest-operation">
+	                    			未通过
+	                                		<span class="invest-operation-payback">拒绝理由</span>
+	                                		<div class="cio-payback" style="width:157px;top:53px;">
+	                                			<div>#{raiseLoan.verifyMessage}</div>
+	                                		</div>
+                                		</div>
+	                    		</ui:fragment>
+	                    	</td>
+	                    	<td>
+	                    		<h:outputText value="#{raiseLoan.money}">
+									<f:convertNumber type="number" pattern="#,###" />
+								</h:outputText>
+	                    	</td>
+	                    	<td>
+	                    		<ui:fragment rendered="#{raiseLoan.status ne RaiseLoanStatus.WAITING_VERIFY}">
+		                    		<a href="#{path}/raise/loanEdit?id=#{raiseLoan.id}" class="edit">编辑</a>
+		                    		<a href="#{path}/raise/loanDetail/#{raiseLoan.id}" class="preview">预览</a>
+	                    		</ui:fragment>
+	                    	</td>
+	                    </tr>
+	                    </ui:repeat>
+	                </tbody>
+	               </table>
+	               <p class="zc-pagebar mg-top">
+                       <ui:include src="../loan-list-paging.xhtml"></ui:include>
+                   </p>
+                   </h:panelGroup>
+            </div>
+        </div>
+        </h:form>
+        <div class="clear"></div>
+    </div>
+</div>
+</ui:define>
+</ui:composition>

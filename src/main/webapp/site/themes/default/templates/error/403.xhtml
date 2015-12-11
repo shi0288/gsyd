@@ -1,0 +1,28 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>403页面</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/site/themes/default/style/wrong.css" />
+</h:head>
+<h:body style="background:#eeeeee;">
+	<div class="wrong_403">
+		<div class="wrong_403_box">
+			<div class="wrong_403_img">
+				<img
+					src="#{request.contextPath}/site/themes/default/images/error/wrong_403.png" /><br />Oh~No~您的权限不足！
+			</div>
+			<div class="wrong_403_words">
+				您现在可以：<br />1. <a href="javascript:history.go(-1);">返回上一页</a><br />2.
+				<a href="#{request.contextPath}/">访问网站首页</a><br />3.
+				反馈问题给客服；电话：#{configHome.getConfigValue("site_phone")}
+<!-- 				&#160;&#160;&#160;&#160;&#160;&#160;<a -->
+<!-- 					href="javascript:alert('等待...');">在线客服</a> -->
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>
+

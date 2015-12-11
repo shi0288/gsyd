@@ -1,0 +1,158 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+<ui:param name="pnr_enable" value="#{configHome.getConfigValue('pnrpay_enable')}"></ui:param>
+<script>
+	//<![CDATA[
+	function checkRecharge() {
+		//是不是汇付资金托管
+		var pnr_enable = '#{pnr_enable}';
+		var flag = false;
+		var myselect = $(".center_right .zhcz_ul a.hover");
+		var regx = /^[1-9]\d*$/;
+		var money = $("#recharge\\:actualMoney").val();
+		if (!regx.test(money)) {
+			$.dialog.tips('请填写正确的整数金额!');
+		}
+		if (myselect.length < 1 && pnr_enable != '1') {
+			$.dialog.tips('请选择充值方式!');
+		}
+		if ((myselect.length >= 1 || pnr_enable == '1') && regx.test(money)) {
+			flag = true;
+		}
+		return flag;
+	}
+	//]]>
+</script>
+<div class="wrapper-central">
+	<div class="person-set ztmain">
+    	<p class="tel font24">资金管理</p>
+        <div class="ad-set-menu fl">
+        	<ul>
+            	<li class="current-ad-set"><a href="javascript:void(0)">充值</a></li>
+                <li><a href="#{path}/raise/user/withdraw">提现</a></li>
+            	<li><a href="#{path}/raise/user/bankcards">银行卡管理</a></li>
+            </ul>
+        </div>
+	        <div class="ad-set-con main-birder fr">
+	        	<div class="center_right">
+					<ui:fragment rendered="#{pnr_enable ne '1'}">
+					<div class="zhcz_h3">选择充值方式</div>
+					</ui:fragment>
+					<h:form id="recharge">
+					<h:panelGroup id="rechargeWay" rendered="#{pnr_enable ne '1'}">
+					<p class="zhcz_p">充值银行</p>
+					<div class="zhcz">
+						<ul class="zhcz_ul">
+						<ui:param name="rechargeWarStr" value="#{bc.no}"></ui:param>
+						<ui:repeat var="bc" value="#{rechargeList.rechargeBankCards}">
+							<li>
+								<h:commandLink styleClass="#{rechargeHome.instance.rechargeWay==rechargeWarStr?'hover':''}" >
+									<img src="#{tplVars.themeImagePath}/banklogo/#{bc.no}.png" />
+									<f:ajax execute="@this" render=":recharge:rechargeWay"
+										listener="#{rechargeHome.instance.setRechargeWay(rechargeWarStr)}"></f:ajax>
+								</h:commandLink>
+							</li>
+						</ui:repeat>
+						<li>
+						<h:commandLink styleClass="#{rechargeHome.instance.rechargeWay=='汇潮'?'hover':''}" >
+									<img src="#{tplVars.themeImagePath}/banklogo/ecpss.png" />
+									<f:ajax execute="@this" render=":recharge:rechargeWay"
+										listener="#{rechargeHome.instance.setRechargeWay('汇潮')}"></f:ajax>
+								</h:commandLink>
+							</li>
+							<div class="clear"></div>
+						</ul>
+					</div>
+					</h:panelGroup>
+					<div class="zhcz_h3 zhcz_h302">填写充值金额</div>
+					<div class="txczje">
+						<div class="txczje02">
+							<div class="txczje_l">账户余额：</div>
+							<div class="txczje_r">
+								<span><h:outputLabel
+										value="#{userBillHome.getBalanceByUserId(loginUserInfo.loginUserId)}">
+										<f:convertNumber maxFractionDigits="2" minIntegerDigits="1" />
+									</h:outputLabel></span>元
+							</div>
+							<div class="clear"></div>
+						</div>
+						<div class="txczje02">
+							<div class="txczje_l">
+								<span>*</span>充值金额：
+							</div>
+							<div class="txczje_r">
+								<h:inputText label="充值金额" styleClass="txt02 money"
+									id="actualMoney" value="#{rechargeHome.instance.actualMoney}"
+									required="true">
+									<f:validateDoubleRange minimum="1"></f:validateDoubleRange>
+									<f:convertNumber maxFractionDigits="0" minIntegerDigits="1" />
+									<archer:validateNumber precision="0" />
+									<f:ajax render="fee allMoney" event="change"
+										listener="#{rechargeHome.calculateFee}"></f:ajax>
+								</h:inputText>
+								元
+							</div>
+							<div class="clear"></div>
+						</div>
+						<div class="txczje02">
+							<div class="txczje_l">充值费用：</div>
+							<div class="txczje_r">
+								<span><h:outputLabel value="#{rechargeHome.instance.fee}"
+										id="fee">
+										<f:convertNumber minIntegerDigits="1" minFractionDigits="2" />
+									</h:outputLabel></span>元<a href="#"><img src="#{tplVars.themeImagePath}/img42.png" /></a>
+							</div>
+							<div class="clear"></div>
+						</div>
+						<div class="txczje02">
+							<div class="txczje_l">
+								实际支付金额：
+							</div>
+							<div class="txczje_r">
+								<span><h:outputLabel value="#{rechargeHome.instance.actualMoney+rechargeHome.instance.fee}"
+										id="allMoney"></h:outputLabel></span>元
+							</div>
+							<div class="clear"></div>
+						</div>
+						<div class="txczje02">
+							<div class="txczje_l"></div>
+							<div class="txczje_r">
+								<ui:fragment rendered="#{pnr_enable ne '1'}">
+									<h:commandLink styleClass="txczje02_btn" action="#{rechargeHome.recharge}" onclick="return checkRecharge()" value="充值" >
+									</h:commandLink>
+								</ui:fragment>
+								<ui:fragment rendered="#{pnr_enable eq '1'}">
+									<h:commandLink styleClass="txczje02_btn" action="#{rechargeHome.recharge}" onclick="return checkRecharge()" value="充值" target="_blank">
+										<f:setPropertyActionListener value="pnr" target="#{rechargeHome.instance.rechargeWay}" />
+									</h:commandLink>
+								</ui:fragment>
+								
+							</div>
+							<div class="clear"></div>
+						</div>
+					</div>
+					</h:form>
+					<p class="zhcz_p02">
+						温馨提示<br /> 1、为了您的账户安全，请在充值前进行身份认证、手机绑定以及提现密码设置。<br />
+						2、您的账户资金将通过第三方平台进行充值。<br /> 3、请注意您的银行卡充值限制，以免造成不便。<br />
+						4、禁止洗钱、信用卡套现、虚假交易等行为，一经发现并确认，将终止该账户的使用。<br />
+						5、如果充值金额没有及时到账，请联系客服。
+					</p>
+				</div>
+	        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+</ui:define>
+</ui:composition>

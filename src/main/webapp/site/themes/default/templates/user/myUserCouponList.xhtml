@@ -1,0 +1,100 @@
+<ui:composition template="center.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<ui:param name="activeCenterMenuUrl" value="/user/myUserCoupons"></ui:param>
+	<ui:define name="center_right">
+	<style>td{text-align:center;}</style>
+		<div class="center_right">
+			<div class="center_box01">
+				<ui:include src="userCenterTop.xhtml"></ui:include>
+				<ul class="grzx_ul">
+					<li><img src="#{tplVars.themeImagePath}/img20.png"
+						title="可用金额" />可用金额<br /> <span><h:outputText
+								value="#{billStatistics.getBalanceByUserId(loginUserInfo.loginUserId)}">
+								<f:convertNumber type="currency" />
+							</h:outputText></span></li>
+					<li><img src="#{tplVars.themeImagePath}/img20.png"
+						title="冻结金额" />冻结金额<br /> <span><h:outputText
+								value="#{billStatistics.getFrozenMoneyByUserId(loginUserInfo.loginUserId)}">
+								<f:convertNumber type="currency" />
+							</h:outputText></span></li>
+					<li><img src="#{tplVars.themeImagePath}/img20.png"
+						title="累计充值" />累计充值<br /> <span><h:outputText
+								value="#{rechargeStatistics.getPaidRechargeMoney(loginUserInfo.loginUserId)}">
+								<f:convertNumber type="currency" />
+							</h:outputText></span></li>
+					<li><img src="#{tplVars.themeImagePath}/img20.png"
+						title="累计提现" />累计提现<br /> <span><h:outputText
+								value="#{withdrawStatistics.getSuccessWithdrawMoney(loginUserInfo.loginUserId)}">
+								<f:convertNumber type="currency" />
+							</h:outputText></span></li>
+				</ul>
+			</div>
+		
+			<div class="zhcz_h3">红包列表</div>
+			<h:form id="form">
+				<h:panelGroup id="dataTable">
+				<table width="786" border="0" cellspacing="0" cellpadding="0"
+					class="tab tab_01">
+					<tr>
+						<td width="10%" align="center" class="tab02">类别</td>
+						<td width="20%" align="center" class="tab02">名称</td>
+						<td width="15%" align="center" class="tab02">生成时间</td>
+						<td width="15%" align="center" class="tab02">有效时间</td>
+						<td width="15%" align="center" class="tab02">使用时间</td>
+						<td width="15%" align="center" class="tab02">状态</td>
+						<td width="10%" align="center" class="tab02">金额</td>
+					</tr>
+					<f:event type="preRenderComponent" listener="#{userCouponList.example.user.setId(loginUserInfo.loginUserId)}"></f:event>
+					<f:event type="preRenderComponent" listener="#{userCouponList.setPageSize(7)}"></f:event>
+					<f:event type="preRenderComponent" listener="#{userCouponList.addOrder('userCoupon.generateTime','desc')}"></f:event>
+					<ui:repeat var="coupon" value="#{userCouponList.lazyModelData}">
+							<tr class="tab02">
+								<td class="tab02">
+									#{dictUtil.getValue('coupon_type',coupon.coupon.type)}
+								</td>
+								<td width="15%" align="center" title="#{coupon.description}">
+									#{stringHome.ellipsis(coupon.coupon.name,6)}
+								</td>
+								<td  class="tab02">
+									<h:outputText value="#{coupon.generateTime}">
+										<f:convertDateTime pattern="yyyy-MM-dd"/>
+									</h:outputText>
+								</td>
+								<td  class="tab02">
+									<h:outputText value="#{coupon.deadline}">
+										<f:convertDateTime pattern="yyyy-MM-dd"/>
+									</h:outputText>
+								</td>
+								<td  class="tab02">
+									<h:outputText value="#{coupon.usedTime}">
+										<f:convertDateTime pattern="yyyy-MM-dd"/>
+									</h:outputText>
+								</td>													
+								<td  class="tab02">#{dictUtil.getValue("user_coupon_status", coupon.status)}</td>
+								<td  class="tab02">
+									#{coupon.coupon.money}
+								</td>
+							</tr>
+						</ui:repeat>
+				</table>
+				<div class="page_box">
+					<div class="page_r">
+						<ui:include
+							src="myUserCouponPaging.xhtml"></ui:include>
+					</div>
+				</div>
+				</h:panelGroup>
+			</h:form>
+		</div>
+	
+		<div class="clear"></div>
+	</ui:define>
+</ui:composition>

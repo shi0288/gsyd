@@ -1,0 +1,21 @@
+/* 代码整理：大头网 www.datouwang.com */
+html, body, form, h1, h2, h3, h4, h5, h6, div, dl, dt, dd, ul, ol, li, p, em, address, a, input, textarea, span, strong, img{margin: 0px;padding: 0px}
+body{font-size: 12px;line-height: 180%;color: #000;font-family: Arial, \5B8B\4F53}
+ul, ol, dl{list-style: none}
+input, textarea, select, button{font-size: 12px}
+img{border: none}
+a{color: #000;text-decoration: none;
+blr:expression(this.onFocus=this.blur());outline: none}
+a:hover{text-decoration: underline}
+table{border-collapse: collapse}
+table, thead, tbody, tfoot, tr, td{margin: 0px}
+.clear{clear: both;height: 0px;line-height: 0px;font-size: 0px;overflow: hidden;visibility: hidden}
+html{min-width: 1002px}
+h1, h2, h3, h4, h5, h6{font-size: 12px;font-weight: normal}
+::selection{background: #6f346a;color: #fff}
+::-moz-selection{background:#6f346a;
+color:#fff}
+::-webkit-selection{background:#6f346a;
+color:#fff}
+section, article, aside, header, footer, nav, dialog, figure{display: block;}
+.clear10{clear: both;height: 10px;line-height: 0px;font-size: 0px;overflow: hidden;}

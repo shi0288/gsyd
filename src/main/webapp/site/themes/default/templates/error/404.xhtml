@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html">
+  <h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>404页面</title>
+    <link type="text/css" rel="stylesheet"
+			href="#{request.contextPath}/site/themes/default/style/wrong.css" />
+  </h:head>
+   <script type="text/javascript"> 
+   </script>
+  <h:body style="background:#f1f1f1;">
+    <div class="wrong_404_box">
+      <div class="wrong_404_img"><img src="#{request.contextPath}/site/themes/default/images/error/wrong-404-02.png" border="0" usemap="#Map" />
+        <map name="Map" id="Map">
+          <area shape="rect" coords="350,277,466,312" href="#{request.contextPath}/" />
+          <area shape="rect" coords="486,277,602,314" href="javascript:history.go(-1);" />
+        </map>
+      </div>
+    </div>
+  </h:body>
+</html>
+

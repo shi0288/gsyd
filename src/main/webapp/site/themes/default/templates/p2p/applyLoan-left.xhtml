@@ -1,0 +1,54 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<style type="text/css">
+		.apploanMenuHover{color:#ff9000;background:#ffffff;};
+	</style>
+	
+		<!-- 个人借款信息左侧-->
+		<div class="info-title">
+<!-- 			<p>借款申请完整度</p> -->
+<!-- 			<p class="percent"><i class="per-txt">50%</i><em><b style="width:50%;"></b></em></p> -->
+			<ul class="info-menu">
+				<li><a href="#{path}/user/applyLoan/personal" id="appLoanMenu1">借款信息</a></li>
+				<li><a href="#{path}/user/loanerPersonInfo">个人信息</a></li>
+				<li><a href="#{path}/user/loanerAdditionInfo">工作财务信息</a></li>
+				<li><a href="#{path}/user/loanerAuthentication">认证信息</a></li>
+			</ul>
+		</div>
+		
+		<script>
+		
+			/*已修改成独立页面 
+			$(function(){
+				var $tabli=$(".info-menu li");
+					$tabli.click(function(){
+						$(".info-menu li a").css({"background-color":"transparent","color":"#ffffff"});
+						$(this).children().css({"background-color":"#ffffff","color":"#ff9000"});
+						var $index=$tabli.index(this);
+						$(".info-form >div").eq($index).show().siblings().hide();
+						});
+			}); */
+			/*这里会加入一个动态的进度条**/
+			
+			
+			
+			/*这里加入一个检测室哪个页面的JS直接从个人中心拷贝**/
+			if ('#{appLoanMenuUrl}') {
+				var selected = $("a[href='#{path}#{appLoanMenuUrl}']");
+				selected.addClass("hover");
+			} else {
+				$('#appLoanMenu1').addClass("hover");
+			}
+			
+		</script>
+</ui:composition>

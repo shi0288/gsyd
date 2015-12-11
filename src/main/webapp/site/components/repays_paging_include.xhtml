@@ -1,0 +1,99 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:fragment rendered="#{investRepaysList.currentPage > 1}">
+		<h:commandLink title="到上一个页面" value="上一页" styleClass="first-page">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage-1)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{investRepaysList.currentPage-5 > 0}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage-5} 页"
+			value="#{investRepaysList.currentPage-5}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage-5)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{investRepaysList.currentPage-4 > 0}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage-4} 页"
+			value="#{investRepaysList.currentPage-4}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage-4)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{investRepaysList.currentPage-3 > 0}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage-3} 页"
+			value="#{investRepaysList.currentPage-3}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage-3)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{investRepaysList.currentPage-2 > 0}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage-2} 页"
+			value="#{investRepaysList.currentPage-2}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage-2)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{investRepaysList.currentPage-1 > 0}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage-1} 页"
+			value="#{investRepaysList.currentPage-1}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage-1)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{investRepaysList.lazyModel.rowCount gt 0}">
+	<a class="current-page">#{investRepaysList.currentPage}</a>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{investRepaysList.lazyModel.rowCount/investRepaysList.pageSize > (investRepaysList.currentPage)}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage+1} 页"
+			value="#{investRepaysList.currentPage+1}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage+1)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{investRepaysList.lazyModel.rowCount/investRepaysList.pageSize > (investRepaysList.currentPage+1)}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage+2} 页"
+			value="#{investRepaysList.currentPage+2}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage+2)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{investRepaysList.lazyModel.rowCount/investRepaysList.pageSize > (investRepaysList.currentPage+2)}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage+3} 页"
+			value="#{investRepaysList.currentPage+3}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage+3)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{investRepaysList.lazyModel.rowCount/investRepaysList.pageSize > (investRepaysList.currentPage+3)}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage+4} 页"
+			value="#{investRepaysList.currentPage+4}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage+4)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+	<ui:fragment
+		rendered="#{investRepaysList.lazyModel.rowCount/investRepaysList.pageSize > (investRepaysList.currentPage+4)}">
+		<h:commandLink title="到第 #{investRepaysList.currentPage+5} 页"
+			value="#{investRepaysList.currentPage+5}">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage+5)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+
+	<ui:fragment rendered="#{investRepaysList.lazyModel.rowCount>investRepaysList.pageSize*investRepaysList.currentPage}">
+		<h:commandLink title="去下一个页面" value="下一页" styleClass="next-page">
+			<f:ajax listener="#{investRepaysList.setCurrentPage(investRepaysList.currentPage+1)}"
+				render="repays"></f:ajax>
+		</h:commandLink>
+	</ui:fragment>
+</f:view>

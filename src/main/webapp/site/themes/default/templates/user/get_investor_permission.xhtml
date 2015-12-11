@@ -1,0 +1,608 @@
+<ui:composition template="center.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<ui:param name="activeCenterMenuUrl"
+		value="/user/get_investor_permission"></ui:param>
+	<ui:define name="center_right">
+		<f:event type="preRenderView"
+			listener="#{borrowerInfoHome.setId(loginUserInfo.loginUserId)}"></f:event>
+		<f:event type="preRenderView"
+			listener="#{userHome.setId(loginUserInfo.loginUserId)}"></f:event>
+		<ui:param name="pnrCorp" value="#{configHome.getConfigValue('pnrpay_corp_account')}"></ui:param>
+		<div class="center_right">
+			<script>
+			//<![CDATA[
+				$(function() {
+					$(".datepicker").datepicker({
+						changeMonth : true,
+						changeYear : true,
+						yearRange : "1920:2020"
+					});
+					
+					//如果是汇付托管则直接提交
+					var pnr_enable = "#{configHome.getConfigValue('pnrpay_enable')}";
+					var pnr_corp = "#{pnrCorp}";
+					if(pnr_enable == '1' && pnr_corp == '0'){
+						//$("body").hide();
+						var pnr_btn = $("#form\\:commit_pnr");
+						var last = 5;
+						var $last = $("#last");
+						var interval = setInterval(function(){
+							last = last - 1;
+							$last.html(last);
+							if(last == 0){
+								clearInterval(interval);
+								if(pnr_btn[0]){
+									pnr_btn.click();
+								}
+							}
+						} , 1000);
+					}
+					$("#form\\:idCard").blur(function(){
+						_checkMessage();
+					});
+				});
+				function _checkMessage(){
+					//根据身份证获得出生日期
+					var card=$("#form\\:idCard").val();
+					var len=card.length;
+					var y="";
+					var m="";
+					var d="";
+					var s=""
+					var a_0=new Date();
+					var a_month=a_0.getMonth()+1;
+					var a_day=a_0.getDate();
+					//alert(a_0);
+					if(len==15){
+					   y="19"+card.substring(6,8);
+					   m=card.substring(8,10);
+					   d=card.substring(10,12);
+					   s=card.substring(14,15)
+					   var a_age=a_0.getFullYear()-y-1;
+					   if(m<a_month || m==a_month && d<=a_day){
+						   a_age++;
+					   }
+					   if(s%2==0){
+						   $("option[value=F]").prop("selected","selected");
+					   }else{
+						   $("option[value=M]").prop("selected","selected");
+					   }
+					   $("#form\\:birthday").val(y+'-'+m+'-'+d);
+					   $("#form\\:age").val(a_age);
+					}
+					if(len==18){
+					   y=card.substring(6,10);
+					   m=card.substring(10,12);
+					   d=card.substring(12,14);
+					   s=card.substring(16,17)
+					   var a_age=a_0.getFullYear()-y-1;
+					   if(m<a_month || m==a_month && d<=a_day){
+						   a_age++;
+					   }
+					   if(s%2==0){
+						   $("option[value=F]").prop("selected","selected");
+					   }else{
+						   $("option[value=M]").prop("selected","selected");
+					   }
+					   $("#form\\:birthday").val(y+'-'+m+'-'+d);
+					   $("#form\\:age").val(a_age);
+					}
+					if(len!=15){
+					   if(len!=18){
+						$("option[value=M]").prop("selected","selected");
+						$("#form\\:birthday").val('');
+						$("#form\\:age").val('');
+					   }
+					}
+			}
+				//]]>
+			</script>
+ <script type="text/javascript">
+    //<![CDATA[
+      var powers=new Array("7","9","10","5","8","4","2","1","6","3","7","9","10","5","8","4","2");
+      var parityBit=new Array("1","0","X","9","8","7","6","5","4","3","2");
+      var sex="F";
+      function validId(obj){
+          var _id=obj.value;
+          if(_id=="")return;
+          var _valid=false;
+          if(_id.length==15){
+              _valid=validId15(_id);
+          }else if(_id.length==18){
+              _valid=validId18(_id);
+          }
+          if(!_valid){
+              alert("身份证号码有误,请检查!");
+              obj.focus();
+              return;
+          } 
+          //出生日期
+          var y = obj.value.substring(6, 10);
+          var m = obj.value.substring(10, 12);
+          var d = obj.value.substring(12, 14);
+          var birthday = y + "-" + m + "-" + d
+          if(birthday=='--'){
+          	birthday="";
+          }
+          $("#form\\:birthday").val(birthday);
+          $("#birthday_str").val(birthday);
+          //设置性别
+          var sexSel=$("#form\\:sex");
+          sexSel.val(sex);
+          if(sex=='F'){
+        	  $("#sex_str").val("女");
+          }else{
+        	  $("#sex_str").val("男");
+          }
+      }   
+      //18位的身份证号码验证
+      function validId18(_id){
+          _id=_id+"";
+          var _num=_id.substr(0,17);
+          var _parityBit=_id.substr(17);
+          var _power=0;
+          for(var i=0;i< 17;i++){
+              //校验每一位号码的合法性
+              if(_num.charAt(i)<'0'||_num.charAt(i)>'9'){
+                  return false;
+                  break;
+              }else{
+                  //加权
+                  _power+=parseInt(_num.charAt(i))*parseInt(powers[i]);
+                  //设置性别
+                  if(i==16&&parseInt(_num.charAt(i))%2==0){
+                      sex="F";
+                  }else{
+                      sex="M";
+                  }
+              }
+          }
+          //取模
+          var mod=parseInt(_power)%11;
+          if(parityBit[mod]==_parityBit){
+              return true;
+          }
+          return false;
+      }
+      //15位身份证校验
+      function validId15(_id){
+          _id=_id+"";
+          for(var i=0;i<_id.length;i++){
+              //校验每一位身份证号码的合法性
+              if(_id.charAt(i)<'0'||_id.charAt(i)>'9'){
+                  return false;
+                  break;
+              }
+          }
+          var year=_id.substr(6,2);
+          var month=_id.substr(8,2);
+          var day=_id.substr(10,2);
+          var sexBit=_id.substr(14);
+          //校验年份位
+          if(year<'01'||year >'90')return false;
+          //校验月份
+          if(month<'01'||month >'12')return false;
+          //校验日
+          if(day<'01'||day >'31')return false;
+          //设置性别
+          if(sexBit%2==0){
+              sex="female";
+          }else{
+              sex="male";
+          }
+          return true;
+      }
+      $(function(){
+    	  loadPage();
+      })
+      function loadPage()
+      {
+    	  var obj=$("#form\\:idCard")[0];
+    	  validId(obj);
+      }      
+      //]]>
+      </script>
+			<div class="zhcz_h3">个人信息</div>
+			<h:form id="form">
+				<!-- 不是汇付资金托管时显示。 -->
+				<table width="456" border="0" cellspacing="0" cellpadding="0" class="jcxx_tab">
+					<sec:ifAnyGranted roles="INVESTOR,CORP,GUARANTEE,LOANER">
+						<tr>
+							<td width="135" align="right"><span>*</span>用户名：</td>
+							<td colspan="2">#{userHome.instance.username}</td>
+						</tr>
+						<tr>
+							<td align="right"><span>*</span>真实姓名：</td>
+							<td width="280">#{fn:substring(userHome.instance.realname,0,1)}**</td>
+							<td width="85" class="gray"><img
+								src="#{tplVars.themeImagePath}/img71.png" width="16" height="16" />已认证</td>
+						</tr>
+						<tr>
+							<td align="right"><span>*</span>身份证号：</td>
+							<td>#{fn:substring(userHome.instance.idCard,0,6)} **** **** ****
+								****</td>
+							<td class="gray"><img
+								src="#{tplVars.themeImagePath}/img71.png" alt="" width="16"
+								height="16" />已认证</td>
+						</tr>
+						<tr>
+							<td align="right"><span>*</span>性别：</td>
+							<td>
+								<h:outputText value="#{dictUtil.getValue('user_sex',userHome.instance.sex)}"/>
+							</td>
+							<td class="gray"><img
+								src="#{tplVars.themeImagePath}/img71.png" alt="" width="16"
+								height="16" />已认证</td>
+						</tr>
+						<tr>
+							<td align="right"><span>*</span>出生日期：</td>
+							<td><h:outputText value="#{userHome.instance.birthday}">
+									<f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" />
+								</h:outputText></td>
+							<td class="gray"><img
+								src="#{tplVars.themeImagePath}/img71.png" alt="" width="16"
+								height="16" />已认证</td>
+						</tr>
+
+						<ui:fragment
+							rendered="#{not empty borrowerInfoHome.instance.borrowerPersonalInfo}">
+							<tr>
+								<td align="right"><span>*</span>个人基础信息</td>
+								<td></td>
+								<td class="gray"><img
+									src="#{tplVars.themeImagePath}/img71.png" alt="" width="16"
+									height="16" />已认证	</td>
+							</tr>
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{not empty borrowerInfoHome.instance.borrowerAdditionalInfo}">
+							<tr>
+								<td align="right"><span>*</span>工作财务信息</td>
+								<td></td>
+								<td class="gray"><img
+									src="#{tplVars.themeImagePath}/img71.png" alt="" width="16"
+									height="16" />已认证</td>
+							</tr>
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{not empty borrowerInfoHome.instance.borrowerAuthentication}">
+							<tr>
+								<td align="right"><span>*</span>认证资料</td>
+								<td></td>
+								<td class="gray"><img
+									src="#{tplVars.themeImagePath}/img71.png" alt="" width="16"
+									height="16" />已认证</td>
+							</tr>
+						</ui:fragment>
+					</sec:ifAnyGranted>
+					<sec:ifNotGranted roles="INVESTOR,CORP,GUARANTEE,LOANER,WAIT_CONFIRM">
+						<ui:fragment rendered="#{configHome.getConfigValue('pnrpay_enable') ne '1'}">
+							<tr>
+								<td width="135" align="right"><span>*</span>用户名：</td>
+								<td colspan="2">#{userHome.instance.username}</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>真实姓名：</td>
+								<td width="280" colspan="2"><h:inputText label="真实姓名"
+										maxlength="20" styleClass="bdsj_txt" id="realname"
+										required="true" value="#{userHome.instance.realname}">
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText> <span style="color:red">用于提现，慎重！</span></td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>身份证号：</td>
+								<td>
+								<h:inputText label="身份证号" styleClass="bdsj_txt" id="idCard" required="true" 
+									value="#{userHome.instance.idCard}" maxlength="50">
+									<archer:validateInputRule ruleId="input.idCard"></archer:validateInputRule>
+									<archer:validateIdCardAlreadyExist></archer:validateIdCardAlreadyExist>
+			                        <f:ajax event="blur" render="@this" onevent="validId(this)"></f:ajax>
+								</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>性别：</td>
+								<h:inputHidden value="#{userHome.instance.sex}" id="sex"/>
+								<td>
+								<INPUT type="text" readonly="readonly" id="sex_str"  class="bdsj_txt"/>
+									<!-- <h:selectOneMenu id="sex" readonly="true" value="#{userHome.instance.sex}"
+										required="true">
+										<f:selectItem itemLabel="#{userMsg.male}" itemValue="M" id="M"></f:selectItem>
+	                            		<f:selectItem itemLabel="#{userMsg.female}" itemValue="F" id="F"></f:selectItem>
+									</h:selectOneMenu> -->
+								</td>
+							</tr>
+                            <script>
+                                //根据身份证自动带入生日
+                                function loadBirthday(obj) {
+                                    var y = obj.value.substring(6, 10);
+                                    var m = obj.value.substring(10, 12);
+                                    var d = obj.value.substring(12, 14);
+                                    var birthday = y + "-" + m + "-" + d;
+                                    if(birthday=="--"){
+                                    	birthday="";
+                                    }
+                                    $("#form\\:birthday").val(birthday);
+                                }
+                            </script>
+							<tr>
+								<td align="right"><span>*</span>出生日期：</td>
+								<h:inputHidden value="#{userHome.instance.birthday}" id="birthday">
+								<f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8"
+											locale="zh_CN" />
+								</h:inputHidden>
+								<td >
+								     <INPUT type="text" readonly="readonly" id="birthday_str" class="bdsj_txt"/>
+								 <!--  styleClass="bdsj_txt datepicker"  日期空间 -->
+								<!-- <h:inputText value="#{userHome.instance.birthday}" id="birthday"
+										required="true" label="出生日期" readonly="true">
+										<f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8"
+											locale="zh_CN" />
+									</h:inputText> -->
+									</td>
+							</tr>
+							<ui:fragment rendered="#{configHome.getConfigValue('enable_cash_password') eq '1' and empty userHome.instance.cashPassword}">
+								<o:validateEqual id="rePasswordValidator" components="pass repass"
+								showMessageFor="repass" message="两次输入的交易密码不一致"></o:validateEqual>
+								<tr>
+									<td align="right"><span>*</span>交易密码：</td>
+									<td><h:inputSecret id="pass" label="交易密码" required="true"
+										styleClass="bdsj_txt" maxlength="16"
+										value="#{userHome.instance.cashPassword}">
+										<f:ajax event="blur" execute="rePasswordValidator @this repass"></f:ajax>
+										<archer:validateInputRule ruleId="input.password"></archer:validateInputRule>
+									</h:inputSecret></td>
+									<p:watermark value="6至16位字母和数字组合" for="pass"></p:watermark>
+								</tr>
+								<tr>
+									<td align="right"><span>*</span>确认交易密码：</td>
+									<td><h:inputSecret id="repass" label="确认交易密码" required="true"
+										styleClass="bdsj_txt" maxlength="16">
+										<f:ajax event="blur" execute="rePasswordValidator @this pass"></f:ajax>
+									</h:inputSecret>
+									</td>
+									<p:watermark value="再次输入密码" for="repass"></p:watermark>
+								</tr>
+							</ui:fragment>
+							<tr>
+								<td></td>
+								<td class="last"><h:commandLink
+										onclick="return confirm('请再次核查信息，确认后不可修改')" value="保存"
+										action="#{userHome.getInvestorPermission}">
+									</h:commandLink></td>
+							</tr>
+						</ui:fragment>
+						
+					</sec:ifNotGranted>
+				</table>
+			</h:form>
+			<ui:fragment rendered="#{configHome.getConfigValue('yeepay_corp_account') eq '2'}">
+				<div class="pnr-permission">易宝正在审核您的资料，请耐心等待审核......</div>
+			</ui:fragment>
+			<sec:ifNotGranted roles="INVESTOR,GUARANTEE,WAIT_CONFIRM,CORP,LOANER">
+				<ui:fragment rendered="#{configHome.getConfigValue('yeepay_corp_account') eq '2'}">
+					<div class="zhcz_h3">企业开户</div>
+					<h:form id="form_yeepay">
+						<table width="456" border="0" cellspacing="0" cellpadding="0" class="jcxx_tab">
+							<tr>
+								<td align="right"><span>*</span>企业名称：</td>
+								<td width="280" colspan="2">
+									<h:inputText label="企业名称" maxlength="20" styleClass="bdsj_txt" id="enterpriseName"
+										required="true" value="#{userHome.yci.enterpriseName}">
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>开户银行许可证：</td>
+								<td width="280" colspan="2">
+									<h:inputText label="开户银行许可证" maxlength="20" styleClass="bdsj_txt" id="bankLicense" required="true" value="#{userHome.yci.bankLicense}">
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>组织机构代码：</td>
+								<td>
+									<h:inputText label="组织机构代码" styleClass="bdsj_txt" id="orgNo" value="#{userHome.yci.orgNo}" maxlength="9" required="true">
+										<o:validator validatorId="javax.faces.RegularExpression" message="组织机构代码格式不正确(8位数字+1位数字或字母)！" pattern="^([0-9]{8}[0-9a-zA-Z]|)$"></o:validator>
+										<f:ajax event="blur"></f:ajax>
+									</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>营业执照编号：</td>
+								<td>
+									<h:inputText label="营业执照编号" styleClass="bdsj_txt" id="businessLicense" required="true" value="#{userHome.yci.businessLicense}" maxlength="15">
+										<o:validator validatorId="javax.faces.RegularExpression" message="营业执照编号格式不正确(15位数字)！" pattern="^[0-9]{15}$"></o:validator>
+										<f:ajax event="blur"></f:ajax>
+									</h:inputText>	
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>税务登记号：</td>
+								<td>
+									<h:inputText label="税务登记号" styleClass="bdsj_txt" id="taxNo" value="#{userHome.yci.taxNo}" maxlength="15" required="true">
+										<o:validator validatorId="javax.faces.RegularExpression" message="税务登记号格式不正确(15位数字)！" pattern="^([0-9]{15}|)$"></o:validator>
+										<f:ajax event="blur"></f:ajax>
+									</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>法人姓名：</td>
+								<td width="280" colspan="2">
+									<h:inputText label="法人姓名" maxlength="20" styleClass="bdsj_txt" id="legal" required="true" value="#{userHome.yci.legal}">
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>法人身份证号：</td>
+								<td><h:inputText label="法人身份证号" styleClass="bdsj_txt" id="legalIdNo" required="true" value="#{userHome.yci.legalIdNo}" maxlength="50">
+										<archer:validateInputRule ruleId="input.idCard"></archer:validateInputRule>
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText></td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>企业联系人：</td>
+								<td width="280" colspan="2">
+									<h:inputText label="企业联系人" maxlength="20" styleClass="bdsj_txt" id="contact" required="true" value="#{userHome.yci.contact}">
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>联系人手机号：</td>
+								<td width="280" colspan="2">
+									<h:inputText label="联系人手机号" maxlength="11" styleClass="bdsj_txt" id="contactPhone" required="true" value="#{userHome.yci.contactPhone}">
+										<archer:validateInputRule ruleId="input.mobile"></archer:validateInputRule>
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td align="right"><span>*</span>联系人邮箱：</td>
+								<td width="280" colspan="2">
+									<h:inputText label="联系人邮箱" maxlength="50" styleClass="bdsj_txt" id="contactEmail" required="true" value="#{userHome.yci.email}">
+										<archer:validateInputRule ruleId="input.email"></archer:validateInputRule>
+										<f:ajax event="blur" render="@this"></f:ajax>
+									</h:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td class="last"><h:commandLink
+										onclick="return confirm('请再次核查信息，确认后不可修改')" value="保存"
+										action="#{userHome.openCorpAccount}">
+									</h:commandLink></td>
+							</tr>
+						</table>
+						<!-- 用户类型暂时写死为企业借款人 -->
+						<f:event type="preRenderComponent" listener="#{userHome.yci.setMemberClassType('ENTERPRISE')}"></f:event>
+						<f:event type="preRenderComponent" listener="#{userHome.yci.setUser(userHome.instance)}"></f:event>
+					</h:form>
+				</ui:fragment>
+			</sec:ifNotGranted>
+			<!-- 汇付天下开户 -->
+			<ui:fragment rendered="#{configHome.getConfigValue('pnrpay_enable') eq '1'}">
+				<sec:ifNotGranted roles="INVESTOR,GUARANTEE,WAIT_CONFIRM,CORP,LOANER">
+					<!-- 仅个人开户 -->
+					<ui:fragment rendered="#{pnrCorp eq '0'}">
+						<div class="pnr-permission">实名认证需要跳转至汇付天下页面，<span id="last">5</span>秒后自动跳转...<br/>
+							<div class="pnr-permission-btn-div">
+								<h:form>
+									<h:commandLink value="立刻前往" id="commit_pnr" action="#{userHome.getInvestorPermission}" target="_blank"> </h:commandLink>
+									<a href="#{path}/user/center">取消</a>
+								</h:form>
+							</div>
+						</div>
+					</ui:fragment>
+					<!-- 个人开户及企业开户 -->
+					<ui:fragment rendered="#{pnrCorp ne '0'}">
+						<style>
+							.jcxx_tab td{
+								border-bottom:none;
+							}
+						</style>
+						<div class="pnr-permission">
+							请选择开户类型进行开户：
+						</div>
+						<div class="pnr-permission">
+							个人用户开户成功后，可进行投资、个人借款、绑卡（个人银行卡）、充值、提现等操作。
+							<table width="456" border="0" cellspacing="0" cellpadding="0" class="jcxx_tab">
+							<tr><td colspan="2">
+							<div class="pnr-permission-btn-div">
+								<h:form>
+									<h:commandLink value="个人开户" id="commit_pnr_" action="#{userHome.getInvestorPermission}" target="_blank"> </h:commandLink>
+								</h:form>
+							</div>
+							</td></tr>
+							</table>
+						</div>
+						<div class="pnr-permission">
+							<ui:fragment rendered="#{pnrCorp eq '1'}">
+								企业用户开户成功后，可作为担保公司，享受所担保借款部分收益。
+								<f:event type="preRenderComponent" listener="#{userHome.corpInfo.setGuarType('Y')}"></f:event>
+							</ui:fragment>
+							<ui:fragment rendered="#{pnrCorp eq '2'}">
+								企业用户开户成功后，可进行企业借款、绑卡（企业银行卡）、提现等操作。
+								<f:event type="preRenderComponent" listener="#{userHome.corpInfo.setGuarType('N')}"></f:event>
+							</ui:fragment>
+							<ui:fragment rendered="#{pnrCorp eq '3'}">
+								企业用户可分为担保用户及非担保用户，其中：<br/>
+								1.&#160;担保用户开户成功后，可作为担保公司，享受所担保借款部分收益。<br/>
+								2.&#160;非担保用户开户成功后，可进行企业借款、绑卡（企业银行卡）、提现等操作。
+							</ui:fragment>
+							<h:form>
+								<table width="456" border="0" cellspacing="0" cellpadding="0" class="jcxx_tab">
+									<tr>
+										<td align="right"><span>*</span>营业执照编号：</td>
+										<td>
+											<h:inputText label="营业执照编号" styleClass="bdsj_txt" id="busiCode" required="true" value="#{userHome.corpInfo.busiCode}" maxlength="15">
+												<o:validator validatorId="javax.faces.RegularExpression" message="营业执照编号格式不正确(15位数字)！" pattern="^[0-9]{15}$"></o:validator>
+												<f:ajax event="blur"></f:ajax>
+											</h:inputText>	
+										</td>
+									</tr>
+									<ui:fragment rendered="#{pnrCorp eq '3'}">
+										<tr>
+											<td align="right"><span>*</span>担保类型：</td>
+											<td>
+												<h:selectOneRadio required="true" requiredMessage="请选择担保类型" value="#{userHome.corpInfo.guarType}">
+													<f:selectItem itemLabel="担保用户" itemValue="Y"/>
+													<f:selectItem itemLabel="非担保用户" itemValue="N"/>
+												</h:selectOneRadio>
+											</td>
+										</tr>
+									</ui:fragment>
+									<tr>
+										<td align="right">组织机构代码：</td>
+										<td>
+											<h:inputText label="组织机构代码" styleClass="bdsj_txt" id="instuCode" value="#{userHome.corpInfo.instuCode}" maxlength="9">
+												<o:validator validatorId="javax.faces.RegularExpression" message="组织机构代码格式不正确(8位数字+1位数字或字母)！" pattern="^([0-9]{8}[0-9a-zA-Z]|)$"></o:validator>
+												<f:ajax event="blur"></f:ajax>
+											</h:inputText>
+										</td>
+									</tr>
+									<tr>
+										<td align="right">税务登记号：</td>
+										<td>
+											<h:inputText label="税务登记号" styleClass="bdsj_txt" id="taxCode" value="#{userHome.corpInfo.taxCode}" maxlength="15">
+												<o:validator validatorId="javax.faces.RegularExpression" message="税务登记号格式不正确(15位数字)！" pattern="^([0-9]{15}|)$"></o:validator>
+												<f:ajax event="blur"></f:ajax>
+											</h:inputText>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="2">
+											<div class="pnr-permission-btn-div">
+												<h:commandLink value="企业开户" id="corp_submit" action="#{userHome.openCorpAccount}"> </h:commandLink>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</h:form>
+						</div>
+					</ui:fragment>
+				</sec:ifNotGranted>
+				<sec:ifAllGranted roles="WAIT_CONFIRM">
+					<div class="pnr-permission">汇付天下正在审核您的资料，请耐心等待审核......</div>
+				</sec:ifAllGranted>
+			</ui:fragment>
+			<!-- 汇付天下开户结束 -->
+		</div>
+		<div class="clear"></div>
+
+	</ui:define>
+</ui:composition>

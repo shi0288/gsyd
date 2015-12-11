@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags">
+
+<ui:param name="path" value="#{request.contextPath}"></ui:param>
+
+<f:view contentType="text/html">
+	<h:head>
+		<f:facet name="first">
+			<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+			<meta name="renderer" content="webkit" />
+			<title>#{siteVars.siteName}</title>
+		</f:facet>
+		<h:outputScript library="primefaces" name="jquery/jquery.js"
+			target="head" />
+		<script type="text/javascript"
+			src="#{tplVars.themeJSPath}/jquery.artDialog.js?skin=idialog"></script>
+		<ui:fragment
+			rendered="#{configHome.getConfigValue('enable_mobile_site') eq '1'}">
+			<script type="text/javascript" charset="utf-8">
+			//<![CDATA[
+			if (!!navigator.userAgent.match(/Mobile/)) {
+				location.href = "#{path}/memberLoginMobile";
+			}
+			//]]>
+			</script>
+		</ui:fragment>
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/jquery.SuperSlide.2.1.1.js"></script>
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/common.js"></script>
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/timer.js"></script>
+		<script type="text/javascript" src="#{tplVars.themeJSPath}/Base64.js"></script>
+		<link type="text/css" rel="stylesheet"
+			href="#{tplVars.themeStylePath}/common.css" />
+		<link type="text/css" rel="stylesheet"
+			href="#{tplVars.themeStylePath}/header.css" />
+		<link type="text/css" rel="stylesheet"
+			href="#{tplVars.themeStylePath}/login_page.css" />
+		
+		<script type="text/javascript">
+		/**
+		用户名密码Base64加密后台MyAuthenticationManager解密
+	*/
+		$(function(){
+			$("#butt").click(function(){
+				var name=$("#username").val();
+				if(name==""){
+					return ;
+				}
+				var nameB64=base64encode(utf16to8(name));
+				$("#j_username").val(nameB64);
+				var pass=$("#password").val();
+				if(pass==""){
+					return ;
+				}
+				var passB64=base64encode(utf16to8(pass));
+				$("#j_password").val(passB64);
+				$("#loginForm").submit();
+			});
+			
+			
+			$(".tjmclick").click(function() {
+				$(".referrer").slideToggle();
+				$(".tjmclick").children('i').toggleClass("sjx2");
+			});
+			
+		});
+	</script>
+	</h:head>
+	<h:body>
+		<archer:archerMessages focus="false" showGlobalMessages="true"
+			severity="0,2"></archer:archerMessages>
+			
+		<div class="password">
+    	<div class="password_logo"><a href="#{path}/"><img src="#{tplVars.themeImagePath}/index/logo.png" /></a></div>
+        <div class="password_p">欢迎登录金鼎海汇</div>
+        <div class="password_r"><a href="#{path}/">金鼎首页</a>  |  <a href="#{path}/term/changjianwenti">帮助中心</a></div>
+        <div class="clear"></div>
+    </div>
+    <div class="password_main">
+    	<div class="land_l">
+        	<div id="slideBox" class="slideBox">
+                  <div class="hd">
+                      <ul>
+                      	<ui:repeat var="pic" value="#{bannerList.getBannerById('login_banner').pictures}" varStatus="i">
+                      		<li></li>
+                      	</ui:repeat>	
+                      </ul>
+                  </div>
+                  <div class="bd">
+                      <ul>
+                      	<ui:repeat var="pic" value="#{bannerList.getBannerById('login_banner').pictures}" varStatus="i">
+							<li><a href="#{path}#{pic.url}" target="_blank"><img src="#{path}#{pic.picture}" /></a></li>
+						</ui:repeat>
+                      </ul>
+                  </div>
+                  <!-- 下面是前/后按钮代码，如果不需要删除即可 -->
+                  <a class="prev" href="javascript:void(0)"></a>
+                  <a class="next" href="javascript:void(0)"></a>
+              </div>
+              <script type="text/javascript">
+              jQuery("#slideBox").slide( { mainCell:".bd ul", effect:"leftLoop",autoPlay:true,trigger:"click"});
+              </script>
+        </div>
+        <div class="land_r">
+        	<form action="#{request.contextPath}/memberLogin" accept-charset="UTF-8" method="post" id="form">
+	       		<ui:fragment rendered="#{not empty request.getParameter('loginSuccessTargetUrl')}">
+					<input type="hidden" name="loginSuccessTargetUrl"
+						value="#{request.getParameter('loginSuccessTargetUrl')}"></input>
+				</ui:fragment>
+				<h:inputText id="j_username" style="display:none" />
+				<h:inputText id="j_password" style="display:none" />
+				<h:inputText id="encrypt" value="encrypt" style="display:none" />
+        		
+	        	<p class="land_r_p">用户名</p>
+<!-- 	            <input type="text" value="输入用户名\手机号\邮箱" class="land_txt" /> -->
+	            <h:inputText id="username" type="text" class="land_txt" maxlength="50" />
+				<p:watermark value="请输入用户名/手机号/邮箱" for="username"></p:watermark>
+	            
+	            <p class="land_r_p">密码</p>
+<!-- 	            <input type="text" value="**********" class="land_txt" /> -->
+	            <h:inputSecret id="password" type="text" class="land_txt" maxlength="16" />
+				<p:watermark value="请输入密码" for="password"></p:watermark>
+	            <ui:fragment rendered="#{sessionScope.need_validate_code or configHome.getConfigValue('login_fail_max_times') eq '0'}">
+					<p class="land_r_p">验证码</p>
+					<h:inputText id="captcha_input" maxlength="4" styleClass="land_txt" style="width: 160px;margin-right: 5px;"></h:inputText>
+					<p:watermark value="请输入验证码" for="captcha_input"></p:watermark>
+					<a class="login_yzm" href="javascript:void(0)"><img
+						alt="点击刷新" id="verifyCode"
+						src="#{request.contextPath}/verifyCodeServlet"
+						onclick="this.src='#{request.contextPath}/verifyCodeServlet?'+new Date().getTime()" /></a>
+				</ui:fragment>
+	            <p class="land_r_p">
+	            	<input name="_spring_security_remember_me" type="checkbox"/>下次自动登录
+	            </p>
+<!-- 	            <input type="button" value="立即登录" class="land_btn" /> -->
+	            <input type="submit" class="land_btn" value="立即登录" id="butt"/>
+	            
+	            <p class="land_r_p"><a href="#{request.contextPath}/find_login-password">忘记密码？</a></p>
+	            <p class="land_r_p02">
+	            	<a href="#{qqOpenAuthService.getAuthUrl()}"><img src="#{tplVars.themeImagePath}/index/img38.png" />QQ登录</a>
+	            	<span style="padding-left: 22px;"></span>
+	            	<a href="#"><img src="#{tplVars.themeImagePath}/index/img39.png" />微博登录</a></p>
+	            <p class="land_r_p03">没有金鼎海汇平台的账号，<a href="#{request.contextPath}/?register=register">立即注册！</a></p>
+        	</form>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <ui:fragment
+			rendered="#{not empty requestScope['SPRING_SECURITY_LAST_EXCEPTION'] and requestScope['SPRING_SECURITY_LAST_EXCEPTION'].message ne 'Authentication method not supported: GET'}">
+			<script>
+				$.dialog.tips('#{requestScope['SPRING_SECURITY_LAST_EXCEPTION'].message}', 2);
+			</script>
+		</ui:fragment>
+	</h:body>
+</f:view>
+</html>

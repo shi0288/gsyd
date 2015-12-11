@@ -1,0 +1,242 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	
+		<!--背景层-->
+		<div id="ShowDiv"></div>
+		<!--投资框-->
+		<div class="invest-div lg-div02">
+			<div class="invest-form lg-form02">
+				<a id="invest-close" class="close_close" onclick="closeInvestWindow();"></a>
+				<h3 class="qrtz_h3">确认投资</h3>
+				<input type="hidden" id="cardinal" value="#{loan.cardinalNumber}"/>
+				<input type="hidden" id="yue" value="#{userBillHome.getBalanceByUserId(loginUserInfo.loginUserId)}"/>
+				<input type="hidden" id="maxMoney" value="#{moneyNeedRaised}"/>
+				<input type="hidden" id="minMoney" value="#{loan.minInvestMoney}"/>
+				<h:form id="investForm">
+				<table width="75%" border="0" cellspacing="0" cellpadding="0"
+					class="qrtz_tab">
+					<tr>
+						<td>起投金额：
+							<h:outputText value="#{loan.minInvestMoney}">
+								<f:convertNumber type="number" />
+							</h:outputText>元
+						</td>
+						<td>递增金额：
+							<h:outputText value="#{loan.cardinalNumber}">
+								<f:convertNumber type="number" />
+							</h:outputText>元
+						</td>
+					</tr>
+					<tr>
+						<td>账户余额：
+							<h:outputLabel value="#{userBillHome.getBalanceByUserId(loginUserInfo.loginUserId)}">
+								<f:convertNumber />
+							</h:outputLabel>元
+						</td>
+						<td><a href="#{path}/user/recharge" target="_blank">充值</a></td>
+					</tr>
+					<tr>
+						<td>可投金额：
+							<h:outputText value="#{moneyNeedRaised}">
+								<f:convertNumber type="number" />
+							</h:outputText>元</td>
+						<td>预计收益：<span class="color_ff9000">
+							<h:outputText value="#{investCalculator.calculateAnticipatedInterest(investHome.instance.money, loan.id)}"
+								id="anticipatedInterest">
+								<f:convertNumber maxFractionDigits="2" />
+							</h:outputText>
+								</span>元
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">您本次投资在此项目中排名第
+						<span
+							class="color_ff9000 font20">
+							<h:outputText value="#{investList.getInvestRanking(loan.id , investHome.instance.money )}" id="ranking"></h:outputText>
+						</span>名
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2"><div class="tzxq_input">
+								<h:inputText id="investMoney" label="投资金额" value="#{investHome.instance.money}" required="true" requiredMessage="投资金额不能为空！">
+									<f:ajax event="blur" render="@this anticipatedInterest ranking investCaculator"></f:ajax>
+									<o:validator validatorId="javax.faces.DoubleRange"
+										minimum="#{loan.minInvestMoney}"
+										maximum="#{loanCalculator.calculateMoneyMaxInvested(loan.id)}"></o:validator>
+									<o:validator
+										validatorId="com.esoft.core.validator.NumberValidator"
+										cardinalNumber="#{loan.cardinalNumber}"></o:validator>
+								</h:inputText>
+								元
+							</div></td>
+					</tr>
+					<tr>
+						<td colspan="2"><!-- <a href="#" class="agreebtn agreebtn02"> 确认投资 -->
+						<ui:fragment rendered="#{loan.loanActivityType eq LoanActivityType.DX}">
+							<div class="tzxq_input">
+								<ui:fragment rendered="#{loan.investPassword ne 0}">
+									<h:inputText label="投资密码" value="#{investHome.instance.userInvestPass}" required="true" id="ut">
+										<f:ajax event="blur"></f:ajax>
+									</h:inputText>
+									<p:watermark value="请输入投资密码" for="ut"></p:watermark>
+								</ui:fragment>
+							</div>
+						</ui:fragment>
+						<sec:ifNotGranted roles="INVESTOR">
+							<a class="agreebtn agreebtn02" href="javascript:void(0)" onclick="getInvestorPer();">立即投资</a>
+						</sec:ifNotGranted>
+						<!-- 判断非新手标或者投资者为新手，因为此弹出页可通过js调出 -->
+						<ui:fragment rendered="#{loan.loanActivityType ne LoanActivityType.XS or investHome.getUserInvestCount(loginUserInfo.loginUserId) le (configHome.getConfigIntValue('sprog_invest_count')-1)}">
+						<sec:ifAllGranted roles="INVESTOR">
+							<p:commandLink id="buyAjax"></p:commandLink>
+							<h:commandLink  styleClass="agreebtn agreebtn02" action="#{investHome.save}" value="立即投资"
+								onclick="return canInvest();">
+								<f:setPropertyActionListener target="#{investHome.instance.loan}" value="#{loan}"></f:setPropertyActionListener>
+							</h:commandLink>
+						</sec:ifAllGranted>
+						</ui:fragment>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<h:selectBooleanCheckbox
+								id="agree" 
+								selected="true" 
+								requiredMessage="请阅读并同意《金鼎海汇投资合同范本》!">
+								<f:validator validatorId="omnifaces.RequiredCheckboxValidator" />
+								<f:ajax event="click"></f:ajax>
+							</h:selectBooleanCheckbox>
+							我已阅读并同意
+							<a href="#{path}/node/spage/contract_example" class="color_e25353" target="_blank">《金鼎海汇投资合同范本》</a>生成借款协议</td>
+					</tr>
+					<tr>
+						<td colspan="2"><a href="#" class="color_0085e2">还款计划</a></td>
+					</tr>
+				</table>
+			</h:form>
+			</div>
+			
+			
+			<!-- 还款计划 -->
+			<h:panelGroup id="investCaculator">
+				<f:event type="preRenderComponent" listener="#{loanHome.instance.setLoanMoney(investHome.instance.money)}"></f:event>
+				<div class="invest-lg-bot lg-bot02">
+					<table width="100%" border="0" cellspacing="0" cellpadding="0"
+						class="lg-bot02_tab">
+						<tr class="lg-bot02_tab_rt">
+							<td>期数</td>
+							<td>本金</td>
+							<td>利息</td>
+							<td>总额</td>
+							<td>还款日</td>
+							<!-- <td>手续费</td> -->
+						</tr>
+						<ui:repeat var="ir" value="#{loanCalculator.calculateAnticipatedRepays(loan)}">
+							<tr>
+								<td>
+									<!-- 期数 -->
+									<h:outputText value="#{ir.period}">
+									</h:outputText>
+								</td>
+								<td>
+									<!-- 本金 -->
+									<h:outputText value="#{ir.corpus}">
+										<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</h:outputText>
+								</td>
+								<td>
+									<!-- 利息 -->
+									<h:outputText value="#{ir.interest}">
+										<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</h:outputText>
+								</td>
+								<td>
+									<!-- 本息 -->
+									<h:outputText value="#{ir.corpus+ir.interest}">
+										<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</h:outputText>
+								</td>
+								<td>
+									<!-- 还款日期 -->
+									<h:outputText
+										value="#{ir.repayDay}">
+										<f:convertDateTime pattern="yyyy-MM-dd" timeZone="GMT+8" />
+									</h:outputText>
+								</td>
+							</tr>
+						</ui:repeat>
+					</table>
+				</div>
+			</h:panelGroup>
+		</div>
+		<script type="text/javascript">
+		//<![CDATA[
+		/*打开投资框*/
+		function opeanInvestWindow(){
+			$("#ShowDiv").css("display", "block").css("opacity", "0.7");
+			$(".invest-div").css("display", "block");
+		}
+		/*关闭投资框*/
+		function closeInvestWindow(){
+			$(".invest-div").css("display", "none");
+			$("#ShowDiv").css("display", "none");
+			$(".circle_bot").remove();
+		}
+		
+		
+		//判断是否可以投资
+		function canInvest(){
+			var b = true;
+			var cardinal = parseInt($("#cardinal").val());
+			var min = parseInt($("#minMoney").val());
+			var max = parseInt($("#maxMoney").val());
+			var yue = parseFloat($("#yue").val());
+			var money = parseInt($("#investForm\\:investMoney").val());
+			if(money){
+				if(money > yue){
+					$.dialog("余额不足");
+					return false;
+				}
+				if(money < min || money > max || money < cardinal){
+					b = false;
+				}
+				if((money-min)%cardinal != 0){
+					b = false;
+				}
+				if(!$("#investForm\\:agree").prop("checked")){
+					b = false;
+				}
+				if($("#investForm\\:ut")[0]&&!$("#investForm\\:ut").val()){
+					b = false;
+				}
+			}else{
+				b = false;
+			}
+			if(b){
+				return confirm("确定投资吗？");
+			}else{
+				$("#investForm\\:buyAjax").click();
+				return false;
+			}
+		}
+		window.onload=function(){
+			if($(".circle_bot")[0]){
+				opeanInvestWindow();
+				$("#investForm\\:buyAjax").click();
+			}
+		}
+		//]]>
+		</script>
+</ui:composition>

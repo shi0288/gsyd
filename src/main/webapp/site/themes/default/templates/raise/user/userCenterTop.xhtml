@@ -1,0 +1,76 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<f:event type="preRenderComponent" listener="#{userHome.setId(loginUserInfo.loginUserId)}"></f:event>
+	<link type="text/css" rel="stylesheet" href="#{path}/include/css/fileupload.less.css" />
+   <script type="text/javascript" src="#{path}/include/js/fileupload.less.js"></script>
+   <style>
+   		.ui-fileupload {
+		  bottom: -7px;
+		  left: 0px;
+		  position: absolute;
+		  filter: alpha(opacity = 0); 
+		    - moz - opacity: 0; 
+		    - khtml - opacity: 0;
+		    opacity: 0;
+		}
+		.ui-button .ui-button-text{
+    		visibility: hidden;
+		}
+   </style>
+	<ui:param name="user" value="#{userHome.instance}"></ui:param>
+	<script>
+		$(function(){
+			$(".mine-count").html($("#mine-count").val());
+			$(".support-count").html($("#support-count").val());
+			$(".like-count").html($("#like-count").val());
+		});
+	</script>
+	<input id="support-count" type="hidden" value="#{statistics.getSuportCountByUser(loginUserInfo.loginUserId)}"></input>
+	<input id="mine-count" type="hidden" value="#{statistics.getRaiseLoanCountByUser(loginUserInfo.loginUserId)}"></input>
+	<input id="like-count" type="hidden" value="#{statistics.getLikedCountByUser(loginUserInfo.loginUserId)}"></input>
+	<div class="delu clear">
+	<h:form>
+		<h:panelGroup id="photo">
+			<ui:fragment rendered="#{not empty user.photo}">
+				<img class="user-img" src="#{path}#{user.photo}" />
+			</ui:fragment>
+			<ui:fragment rendered="#{empty user.photo}">
+				<img class="user-img" src="#{tplVars.themeImagePath}/raise/pic.png" />
+			</ui:fragment>
+		</h:panelGroup>
+	    <div class="user-info">
+	    <p class="font24">#{user.username}</p>
+	    <p class="user-name font18">#{user.mobileNumber}</p>
+	    <p class="font16"><img src="#{tplVars.themeImagePath}/raise/addr.png"/>#{user.area.parent.name}，#{user.area.name}</p>
+	    <p class="font16"><img src="#{tplVars.themeImagePath}/raise/date.png" />#{of:daysBetween(user.registerTime,now)}天前加入</p>
+	    </div>
+	    <div class="user-btn">
+	    	<a href="#">消息中心</a>
+	        <a href="#{path}/raise/user/info">个人设置</a>
+	        <sec:ifNotGranted roles="INVESTOR">
+		        <a href="#{path}/raise/permission">实名认证</a>
+	        </sec:ifNotGranted>
+	        <span style="position: relative;">
+	       		<a href="#">头像设置</a>
+	        	<p:fileUpload dragDropSupport="true" update="photo" id="upload"
+								invalidFileMessage="#{commonMsg.invalidFileMessage}"
+								invalidSizeMessage="#{commonMsg['validator.SizeValidator.MAXIMUM500k']}"
+								label="上传" fileLimit="1"
+								fileUploadListener="#{userHome.uploadPhoto}" mode="advanced"
+								auto="true" sizeLimit="500000"
+								allowTypes="/(\.|\/)(gif|jpe?g|png|JPG|JPEG|GIF)$/" />
+	        </span>
+	    </div>
+	 </h:form>
+	</div>
+	
+
+</ui:component>

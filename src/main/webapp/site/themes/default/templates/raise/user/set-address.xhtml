@@ -1,0 +1,283 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	template="#{tplVars.currentThemePath}/templates/page.xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:archer="http://java.sun.com/jsf/archer"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:sec="http://www.springframework.org/security/facelets/tags"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+<ui:define name="content">
+<style>
+	.ztmain-box,.info-main-zjhb{
+		max-height:550px;
+	}
+	.aui_state_noTitle{
+		z-index:9999 !important;
+	}
+	.aui_state_lock{
+		z-index:8888 !important;
+	}
+</style>
+<script>
+		//<![CDATA[
+					function show_address(){
+						art.dialog({
+							content:$("#add")[0],
+							  id: 'EF893L',
+							  lock: true
+						});
+						$('.aui_close').click(function () {
+							  $('.circle_bot').remove();
+							  $('body,html').animate({
+							    scrollTop: 0
+							  }, 400);
+							});
+					}
+					function cancel_address(){
+						$(".aui_close").click();
+					}
+					function oncomplete(xhr, status, args){
+						if(!args.validationFailed){
+							cancel_address();
+						}
+					}
+					function selectedcard(){
+// 						if($(".bankcard.hover").length==0){
+// 							$.artDialog.tips("请选择银行卡");
+// 							return false;
+// 						}
+						return true;
+					}
+					function cancelAddCard(){
+						$(".add-card-div").hide();
+						$(".add-card-div").closest(".aui_state_lock").find(".aui_close").click();
+					}
+					function showAddCard(xhr, status, args){
+						if(!args.validationFailed){
+							$(".add-card-div").show();
+							$.artDialog({
+								content : document.getElementById('addCard'),
+								id : 'addCards',
+								fixed : true,
+								lock : true,
+							});
+						}
+					}
+					function savecard(xhr, status, args){
+						if(!args.validationFailed){
+							cancelAddCard();
+						}
+					}
+					$(function(){
+// 						$("body").on("click", ".bankcard", function(){
+// 							$(this).parent().find(".hover").removeClass("hover");
+// 							$(this).addClass("hover");
+// 						});
+					});
+		//]]>
+	</script>
+<div class="wrapper-central">
+	<div class="person-set ztmain">
+    	<p class="tel font24">个人设置</p>
+        <p class="ter font18"><a class="zcol" href="#{path}/raise/user/center">返回个人中心</a></p>
+        <br/>
+        <div class="set-menu main-birder fl">
+        	<ul>
+            	<li><a href="#{path}/raise/user/info">资料修改</a></li>
+                <li><a href="#{path}/raise/user/password">密码修改</a></li>
+                <li class="current-set"><a href="javascript:void(0)">收件地址管理</a></li>
+            </ul>
+        </div>
+        <div class="set-con main-birder fr">
+        	<h:form id="list">
+        	<div class="set-con-r">
+            	<p class="font20">收件地址管理</p>
+                <p class="font16">可添加多个收件地址，以便收取回报时使用</p>
+                <table class="info-xm-tb">
+		        	<tr><td>姓名</td><td>手机</td><td>地区</td><td>详细地址</td><td>是否默认</td><td>操作</td></tr>
+		        	<f:event type="preRenderComponent" listener="#{shipAddressList.example.user.setId(loginUserInfo.loginUserId)}"></f:event>
+		        	<f:event type="preRenderComponent" listener="#{shipAddressList.example.setStatus(ShipAddressStatus.NORMAL)}"></f:event>
+				    <f:event type="preRenderComponent" listener="#{shipAddressList.setPageSize(1000)}"></f:event>
+		        	<ui:repeat var="address" value="#{shipAddressList.lazyModelData}">
+			            <tr>
+			            	<td>#{address.name}</td>
+			            	<td>#{address.mobile}</td>
+			            	<td>#{address.area.name}</td>
+			            	<td>#{address.address}</td>
+			            	<td>#{address.isDefault? '是':'否'}</td>
+			            	<td>
+			            		<h:commandLink value="删除" styleClass="zcol" onclick="return confirm('确认删除？')">
+			            			<p:ajax listener="#{shipAddressHome.delete(address.id)}" update=":list" ></p:ajax>
+			            		</h:commandLink>
+			            		<label class="zcol">/</label>
+			            		<h:commandLink value="编辑" styleClass="zcol">
+			            			<p:ajax listener="#{shipAddressHome.clearAndsetId(address.id)}" update=":add" oncomplete="show_address()"></p:ajax>
+			            		</h:commandLink>
+			            	</td>
+			            </tr>
+		            </ui:repeat>
+		        </table>
+		        <div style="margin-top:30px;">
+		        <h:commandLink value="+添加地址" styleClass="pre-nex-btn add-b-h mar-le0">
+           			<p:ajax listener="#{shipAddressHome.clear()}" update=":add" oncomplete="show_address()"></p:ajax>
+           		</h:commandLink>
+           		</div>
+            </div>
+            </h:form>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+<!-- 收获地址弹出框 -->
+<h:form id="add" style="display:none;">
+	<ui:param name="address" value="#{shipAddressHome.instance}"></ui:param>
+	<div class="ztmain-bg" onclick="cancel_address()"></div>
+    <div class="" style="width:1030px;">
+        <div class="info-main-zjhb">
+        	<p class="zjhb-tit">添加收件地址</p>
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    收件人：<label>*</label>
+                </div>
+                <div class="item-con fr">
+                    <h:inputText value="#{address.name}" styleClass="fo-inp input-p-sum cm-border" required="true" label="收件人" maxlength="20"></h:inputText>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    手机：<label>*</label>
+                </div>
+                <div class="item-con fr">
+                    <h:inputText value="#{address.mobile}" styleClass="fo-inp input-p-n cm-border" required="true" label=" 手机" maxlength="11">
+                    	<archer:validateInputRule ruleId="input.mobile"></archer:validateInputRule>
+                    </h:inputText>
+                </div>
+            </div>
+            <div class="item clear">
+            	<div class="item-tit fl font16">
+                	所在地：<label>*</label>
+                </div>
+                <div class="item-con fr">
+                	<f:event listener="#{areaHome.initByCity(address.area)}" type="preRenderComponent" />
+					<h:selectOneMenu  styleClass="cm-border" value="#{areaHome.selectedProvince}" converter="archer.EntityConverter"  >
+						<f:selectItems value="#{areaHome.allProvinces}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+						<f:ajax listener="#{areaHome.findAllCities}" render="jobareaSelect"></f:ajax>
+					</h:selectOneMenu>
+					<h:panelGroup id="jobareaSelect" >
+						<h:selectOneMenu  value="#{address.area}" converter="archer.EntityConverter" styleClass="cm-border" rendered="#{not empty areaHome.allCities}">
+							<f:selectItems value="#{areaHome.allCities}" var="area" itemLabel="#{area.name}" itemValue="#{area}"></f:selectItems>
+						</h:selectOneMenu>
+					</h:panelGroup>
+                </div>
+            </div>
+            <div class="item clear">
+            	<div class="item-tit fl font16">
+                	详细地址：<label>*</label>
+                </div>
+                <div class="item-con fr">
+                	<h:inputText value="#{address.address}" styleClass="fo-inp input-p-n cm-border" required="true" label="详细地址" maxlength="100"></h:inputText>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    邮编：
+                </div>
+                <div class="item-con fr">
+                    <h:inputText value="#{address.zipCode}" styleClass="fo-inp input-p-sum cm-border"  label="邮编" maxlength="6">
+                    	<f:validateRegex pattern="^([0-9]{6}|)$" />
+                    </h:inputText>
+                </div>
+            </div>
+<!--              <div class="item clear"> -->
+<!--                 <div class="item-tit fl font16"> -->
+<!--                     银行卡： -->
+<!--                 </div> -->
+<!--                 <div class="item-con fr" style="padding-top: 12px;"> -->
+<!--                     <h:panelGroup id="bankcardlist"> -->
+<!--                     	<f:event type="preRenderComponent" listener="#{bankCardList.setBankCardListbyLoginUser(null)}"></f:event> -->
+<!--                     	<ui:repeat var="bankcard" value="#{bankCardList.bankCardListbyLoginUser}"> -->
+<!--                     		<ui:param name="bcnL" value="#{bankcard.cardNo.length()}"></ui:param> -->
+<!--                     		<h:commandLink styleClass="bankcard #{address.bankcard.id eq bankcard.id?'hover':''}" value="#{bankcard.bank}：#{fn:substring(bankcard.cardNo,0,4)} **** **** #{fn:substring(bankcard.cardNo,bcnL-4,bcnL)}"> -->
+<!--                     			<f:ajax listener="#{address.setBankcard(bankcard)}"></f:ajax> -->
+<!--                     		</h:commandLink> -->
+<!--                     	</ui:repeat> -->
+<!--                     </h:panelGroup> -->
+<!--                     <h:commandLink value="+增加银行卡" styleClass="add-bankcard"> -->
+<!--                     	<p:ajax listener="#{bankCardHome.instance.setId(null)}" update=":addCard" oncomplete="showAddCard(xhr, status, args)"></p:ajax> -->
+<!--                     </h:commandLink> -->
+<!--                     <br/> -->
+<!--                     <div>银行卡信息用于资金类回报及项目失败时打款。</div> -->
+<!--                 </div> -->
+<!--             </div> -->
+            <div class="item clear">
+                <div class="item-tit fl font16">
+                    默认地址：
+                </div>
+                <div class="item-con fr">
+                   <h:selectOneRadio value="#{address.isDefault}">
+                   		<f:selectItem itemLabel="是" itemValue="true"/>
+                   		<f:selectItem itemLabel="否" itemValue="false"/>
+                   </h:selectOneRadio>
+                </div>
+            </div>
+            <div class="mar-top50">
+            	 <h:commandLink value="保存" styleClass="save-btn mar300 font18 add-b-h" onclick="return selectedcard();">
+	            	<p:ajax listener="#{shipAddressHome.saveOrUpdate}" process="@form" oncomplete="oncomplete(xhr, status, args)" update=":list"></p:ajax>
+	            </h:commandLink>
+            	<a class="save-btn font18" href="javascript:void(0)" onclick="cancel_address()">取消</a>
+            </div>
+        </div>
+    </div>
+</h:form>
+<!-- <h:form id="addCard"> -->
+<!-- 	<ui:param name="bankcard" value="#{bankCardHome.instance}"></ui:param> -->
+<!-- 	 <div class="add-card-div"> -->
+<!-- 	 		<div class="add-card-title">添加银行卡</div> -->
+<!-- 	 		<table> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<th>开户名</th> -->
+<!-- 	 				<td> -->
+<!-- 	 					与收件人姓名相同 -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<th>选择银行<label>*</label></th> -->
+<!-- 	 				<td> -->
+<!-- 	 					<div class="item-con"> -->
+<!-- 		 					<h:selectOneMenu value="#{bankcard.bankNo}" styleClass="cm-border"> -->
+<!-- 								<f:selectItems value="#{rechargeList.rechargeBankCards}" var="bc"  itemLabel="#{bc.bankName}" itemValue="#{bc.no}" /> -->
+<!-- 							</h:selectOneMenu> -->
+<!-- 						</div> -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<th>开户行<label>*</label></th> -->
+<!-- 	 				<td> -->
+<!-- 	 					<h:inputText value="#{bankcard.name}" styleClass="fo-inp input-p-n cm-border" required="true" label="开户行" maxlength="100"></h:inputText> -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<th>银行卡号<label>*</label></th> -->
+<!-- 	 				<td> -->
+<!-- 	 					<h:inputText value="#{bankcard.cardNo}" styleClass="fo-inp input-p-n cm-border" onkeyup="this.value=this.value.replace(/\D/g,'')" required="true" label="开户行" maxlength="100"> -->
+<!-- 	 						<f:validateLength minimum="5" maximum="40"></f:validateLength> -->
+<!-- 	 					</h:inputText> -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 			<tr> -->
+<!-- 	 				<td colspan="2"> -->
+<!-- 	 					<h:commandLink value="保存" styleClass="save-btn mar300 font18 add-b-h"> -->
+<!-- 			            	<p:ajax listener="#{bankCardHome.save}" process="@form" oncomplete="savecard(xhr, status, args)" update=":add:bankcardlist"></p:ajax> -->
+<!-- 			            </h:commandLink> -->
+<!-- 			            <a class="save-btn font18" href="javascript:void(0)" onclick="cancelAddCard()">取消</a> -->
+<!-- 	 				</td> -->
+<!-- 	 			</tr> -->
+<!-- 	 		</table> -->
+<!-- 	 </div> -->
+<!-- </h:form> -->
+</ui:define>
+</ui:composition>
