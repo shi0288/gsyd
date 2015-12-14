@@ -487,6 +487,8 @@ public class TrusteeshipHome {
 	 * 从账户中心进行易宝开户
 	 */
 	public String getInvestorPermission() {
+
+		log.info("从账户中心进行易宝开户");
 		try {
 			yeePayUserOperation.receiveOperationPostCallback(FacesUtil
 					.getHttpServletRequest());

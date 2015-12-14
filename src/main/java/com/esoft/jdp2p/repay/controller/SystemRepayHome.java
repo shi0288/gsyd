@@ -66,15 +66,18 @@ public class SystemRepayHome {
 	 * @return
 	 */
 	public String advanceRepay(String loanId){
+
 		try {
 			repayByAminService.advanceRepayByAdmin(loanId);
 			FacesUtil.addInfoMessage("还款成功！");
 		} catch (AdvancedRepayException e) {
 			e.printStackTrace();
 			FacesUtil.addInfoMessage(e.getMessage());
+			return null;
 		} catch (InsufficientBalance e) {
 			e.printStackTrace();
 			FacesUtil.addInfoMessage("账户余额不足");
+			return null;
 		}
 		
 		return FacesUtil.redirect("/admin/loan/repaymentInfoList");

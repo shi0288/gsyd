@@ -68,6 +68,12 @@
 					paginatorTemplate="#{commonMsg.paginatorTemplate}">
 					<p:column sortBy="#{userBill.time}" width="120">
 						<f:facet name="header">
+							<h:outputText value="ID"></h:outputText>
+						</f:facet>
+						<h:outputText value="#{userBill.id}"></h:outputText>
+					</p:column>
+					<p:column sortBy="#{userBill.time}" width="120">
+						<f:facet name="header">
 							<h:outputText value="时间"></h:outputText>
 						</f:facet>
 						<h:outputText value="#{userBill.time}">

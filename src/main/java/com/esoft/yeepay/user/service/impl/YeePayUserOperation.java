@@ -72,6 +72,8 @@ public class YeePayUserOperation extends YeePayOperationServiceAbs<User> {
 		// 邮箱
 		content.append("<email>" + user.getEmail() + "</email>");
 		// 回调通知 URL
+		log.debug("1:"+YeePayConstants.ResponseWebUrl.PRE_RESPONSE_URL);
+		log.debug("1:"+YeePayConstants.OperationType.CREATE_ACCOUNT);
 		content.append("<callbackUrl>"
 				+ YeePayConstants.ResponseWebUrl.PRE_RESPONSE_URL
 				+ YeePayConstants.OperationType.CREATE_ACCOUNT
@@ -122,6 +124,7 @@ public class YeePayUserOperation extends YeePayOperationServiceAbs<User> {
 		}
 		// 响应的参数 为xml格式
 		String respXML = request.getParameter("resp");
+		log.debug("收到的");
 		log.debug(respXML.toString());
 		// 签名
 		String sign = request.getParameter("sign");

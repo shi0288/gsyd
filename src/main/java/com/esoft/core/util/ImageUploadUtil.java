@@ -11,20 +11,19 @@ import com.esoft.core.jsf.util.FacesUtil;
 
 public class ImageUploadUtil {
 
-	private final static String UPLOAD_PATH = "/upload";
+//	private final static String UPLOAD_PATH = "/upload";
+	private final static String UPLOAD_PATH = "/data/www/upload";
 	private static SimpleDateFormat formater = new SimpleDateFormat("yyyyMMdd");
 	
 	
 	public static String upload(InputStream is,String fileName){
 		try {
 			final String path = UPLOAD_PATH + "/" + formater.format(new Date());
-			final String absPath = FacesUtil.getRealPath(path) ;
+			mkdir(path);
+			//final String absPath = FacesUtil.getRealPath(path) ;
 			fileName = getName(fileName);
-			final String savefile = absPath +"/"+ fileName;
-		
-			mkdir(absPath);
-			
-			FileOutputStream out = new FileOutputStream(savefile);
+			final String saveFile = path +"/"+ fileName;
+			FileOutputStream out = new FileOutputStream(saveFile);
 			byte[] buffer = new byte[2048];
 			int x = 0;
 			while ((x = is.read(buffer)) != -1) {
@@ -32,8 +31,7 @@ public class ImageUploadUtil {
 			}
 			is.close();
 			out.close();
-			
-			return ( path +"/"+ fileName) ;
+			return ( "/upload" +"/"+ fileName) ;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
