@@ -59,6 +59,8 @@ public class Loan implements java.io.Serializable, Cloneable {
 	private String loanPurpose;
 	// 借款人
 	private User user;
+	// 超级债权人
+	private User superUser;
 	// 审核人
 	private User verifyUser;
 	// 代偿者
@@ -764,6 +766,12 @@ public class Loan implements java.io.Serializable, Cloneable {
 		return this.user;
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "super_user_id", nullable = false)
+	public User getSuperUser() {
+		return superUser;
+	}
+
 	@Column(name = "verified", length = 32)
 	public String getVerified() {
 		return this.verified;
@@ -1024,6 +1032,10 @@ public class Loan implements java.io.Serializable, Cloneable {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public void setSuperUser(User superUser) {
+		this.superUser = superUser;
 	}
 
 	public void setVerified(String verified) {

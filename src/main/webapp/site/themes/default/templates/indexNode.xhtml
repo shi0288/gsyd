@@ -4,7 +4,8 @@
 	
 	<div class="run">
 		<div class="run-con main-w clearfix">
-			<div class="banner-list fl" id="marquee01">
+			<!--style="border-right: 0px solid #e5e5e5;"去除中间竖条-->
+			<div class="banner-list fl" id="marquee01" style="border-right: 0px solid #e5e5e5;">
 				<i class="run-i1 sm-icon fl"></i>
 				<ul class="banner-list-ul fl">
 					<ui:repeat var="item" value="#{nodeList.getNodes('ZXDT').data}" varStatus='i'>
@@ -22,11 +23,11 @@
 					vis : 1
 				});
 			</script>
-			<div class="run-r fr">
-				<i class="sm-icon run-i2"></i>已有<span>￥<h:outputText value="#{loanStatistics.getLoanMoney()}">
-						<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>
-					</h:outputText></span>投资在国商金融完成
-			</div>
+			<!--<div class="run-r fr">-->
+				<!--<i class="sm-icon run-i2"></i>已有<span>￥<h:outputText value="#{loanStatistics.getLoanMoney()}">-->
+						<!--<f:convertNumber minIntegerDigits="1" maxFractionDigits="2"></f:convertNumber>-->
+					<!--</h:outputText></span>投资在国商金融完成-->
+			<!--</div>-->
 		</div>
 	</div>
 	<!--run end-->

@@ -39,10 +39,10 @@
 					<h:outputLabel value="借款用户"></h:outputLabel>
 					<h:outputText value="#{loanHome.instance.user.username}"></h:outputText>
 
-					<h:outputLabel value="标的类型"></h:outputLabel>
+					<h:outputLabel value="还款方式"></h:outputLabel>
 					<h:panelGroup id="loanType">
 						<h:selectOneMenu value="#{loanHome.instance.type}" required="true"
-							converter="archer.EntityConverter" label="标的类型">
+							converter="archer.EntityConverter" label="还款方式">
 							<f:selectItem itemLabel="请选择" itemValue=""
 								noSelectionOption="true" />
 							<f:selectItems value="#{loanTypeList.allResultList}" var="type"

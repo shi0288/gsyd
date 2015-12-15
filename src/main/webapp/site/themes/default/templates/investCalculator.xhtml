@@ -49,7 +49,7 @@
 								<label class="fl">还款方式：</label>
 								<h:selectOneMenu id="type" value="#{loanHome.instance.type}"
 									styleClass="ui-select fl" required="true"
-									converter="archer.EntityConverter" label="标的类型">
+									converter="archer.EntityConverter" label="还款方式">
 									<f:selectItem itemLabel="请选择" noSelectionOption="true" />
 									<f:selectItems value="#{loanTypeList.allResultList}" var="type"
 										itemLabel="#{type.name}" itemValue="#{type}" />

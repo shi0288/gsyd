@@ -21,7 +21,7 @@
 		<h:form>
 		<p:remoteCommand process="@this" immediate="true" name="clearPage"
 						actionListener="#{loanList.setCurrentPage(1)}"></p:remoteCommand>
-			<div class="select-div">
+			<div class="select-div" style="min-height:180px">
 				<div class="stip">
 					<p class="tiptxt">筛选投资项目</p>
 				</div>
@@ -69,55 +69,56 @@
 						</div>
 						<div class="clear"></div>
 					</div>
-					<div class="zt zt_01">
-						<p>风险等级：</p>
-						<div class="zt01">
-							<h:commandLink styleClass="hover" title="全部" value="全部">
-								<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel(null)}">
-								</f:ajax>
-							</h:commandLink>
-							<h:commandLink title="AAA" value="AAA">
-								<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('AAA')}">
-								</f:ajax>
-							</h:commandLink>
-							<h:commandLink title="AA" value="AA">
-								<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('AA')}">
-								</f:ajax>
-							</h:commandLink>
-							<h:commandLink title="A" value="A">
-								<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('A')}">
-								</f:ajax>
-							</h:commandLink>
-							<h:commandLink title="B" value="B">
-								<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('B')}">
-								</f:ajax>
-							</h:commandLink>
-							<h:commandLink title="C" value="C">
-								<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('C')}">
-								</f:ajax>
-							</h:commandLink>
-							<h:commandLink title="D" value="D">
-								<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('D')}">
-								</f:ajax>
-							</h:commandLink>
-							<h:commandLink title="HR" value="HR">
-								<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('HR')}">
-								</f:ajax>
-							</h:commandLink>
-						</div>
-					</div>
+					<!--<div class="zt zt_01">-->
+						<!--<p>风险等级：</p>-->
+						<!--<div class="zt01">-->
+							<!--<h:commandLink styleClass="hover" title="全部" value="全部">-->
+								<!--<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel(null)}">-->
+								<!--</f:ajax>-->
+							<!--</h:commandLink>-->
+							<!--<h:commandLink title="AAA" value="AAA">-->
+								<!--<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('AAA')}">-->
+								<!--</f:ajax>-->
+							<!--</h:commandLink>-->
+							<!--<h:commandLink title="AA" value="AA">-->
+								<!--<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('AA')}">-->
+								<!--</f:ajax>-->
+							<!--</h:commandLink>-->
+							<!--<h:commandLink title="A" value="A">-->
+								<!--<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('A')}">-->
+								<!--</f:ajax>-->
+							<!--</h:commandLink>-->
+							<!--<h:commandLink title="B" value="B">-->
+								<!--<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('B')}">-->
+								<!--</f:ajax>-->
+							<!--</h:commandLink>-->
+							<!--<h:commandLink title="C" value="C">-->
+								<!--<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('C')}">-->
+								<!--</f:ajax>-->
+							<!--</h:commandLink>-->
+							<!--<h:commandLink title="D" value="D">-->
+								<!--<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('D')}">-->
+								<!--</f:ajax>-->
+							<!--</h:commandLink>-->
+							<!--<h:commandLink title="HR" value="HR">-->
+								<!--<f:ajax render="dataTable" listener="#{loanList.example.setRiskLevel('HR')}">-->
+								<!--</f:ajax>-->
+							<!--</h:commandLink>-->
+						<!--</div>-->
+					<!--</div>-->
 					<div class="clear"></div>
 				</div>
-				<div class="xmzt_r">			
-					
-						<p>
-							<span>数据统计</span> <br /> 融资项目：#{loanStatistics.getLoanRSCount('房贷')}个<br /> 累计成交：
-							<h:outputText value="#{investStatistics.getAllInvestsMoney('房贷')}">
-								<f:convertNumber />
-							</h:outputText>
-							元<br /> 投 标 中：#{loanStatistics.getLoanCount(LoanStatus.RAISING, '房贷')}个
-						</p>								
-				</div>
+
+				<!--<div class="xmzt_r">			-->
+						<!--<p>-->
+							<!--<span>数据统计</span> <br /> 融资项目：#{loanStatistics.getLoanRSCount('房贷')}个<br /> 累计成交：-->
+							<!--<h:outputText value="#{investStatistics.getAllInvestsMoney('房贷')}">-->
+								<!--<f:convertNumber />-->
+							<!--</h:outputText>-->
+							<!--元<br /> 投 标 中：#{loanStatistics.getLoanCount(LoanStatus.RAISING, '房贷')}个-->
+						<!--</p>								-->
+				<!--</div>-->
+
 				<div class="clear"></div>
 			</div>
 			<div class="list-div">
@@ -131,7 +132,7 @@
 						<table width="1000">
 							<tr class="tr01">
 								<td width="250" align="center">借款标题</td>
-								<td width="100">信用等级</td>
+								<!--<td width="100">信用等级</td>-->
 								<td width="100">年利率</td>
 								<td width="180">金额</td>
 								<td width="150">期限</td>
@@ -159,7 +160,7 @@
 							<ui:repeat var="loan" value="#{loanList.lazyModelData}">
 								<tr>
 									<td><a class="pname" href="#{path}/p2p_loan/#{loan.id}" title="#{loan.name}">#{stringHome.ellipsis(loan.name, 15)}</a></td>
-									<td align="center"><span class="level">#{loan.riskLevel}</span></td>
+									<!--<td align="center"><span class="level">#{loan.riskLevel}</span></td>-->
 									<td><h:outputText value="#{loan.ratePercent}">
 											<f:convertNumber minFractionDigits="2" />
 										</h:outputText>%</td>

@@ -49,9 +49,9 @@
 				</p>
 				<p>
 					<h:panelGroup id="loanType">
-					<span class="stxt dot-bg">标的类型</span><span class="sinput">
+					<span class="stxt dot-bg">还款方式</span><span class="sinput">
 							<h:selectOneMenu value="#{loanHome.instance.type}" style="height: 30px;"
-								required="true" converter="archer.EntityConverter" label="标的类型">
+								required="true" converter="archer.EntityConverter" label="还款方式">
 								<f:selectItem itemLabel="请选择" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems value="#{loanTypeList.allResultList}" var="type"

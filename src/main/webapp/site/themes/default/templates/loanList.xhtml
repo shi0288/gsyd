@@ -133,19 +133,21 @@
 						</div>
 
 					</div>
-					<div class="xmzt_r">
-						<p>
-							<span>数据统计</span>
-							<br />
-							融资项目：#{loanStatistics.getLoanRSCount('企业贷')}个<br />
-							累计成交：
-							<h:outputText value="#{investStatistics.getAllInvestsMoney('企业贷')}">
-								<f:convertNumber />
-							</h:outputText>元<br />
-							投资笔数：#{investStatistics.getAllSuccessInvestsNum('企业贷')}笔
-							<br />投 标 中：#{loanStatistics.getLoanCount(LoanStatus.RAISING, '企业贷')}个
-						</p>
-					</div>
+
+					<!--<div class="xmzt_r">-->
+						<!--<p>-->
+							<!--<span>数据统计</span>-->
+							<!--<br />-->
+							<!--融资项目：#{loanStatistics.getLoanRSCount('企业贷')}个<br />-->
+							<!--累计成交：-->
+							<!--<h:outputText value="#{investStatistics.getAllInvestsMoney('企业贷')}">-->
+								<!--<f:convertNumber />-->
+							<!--</h:outputText>元<br />-->
+							<!--投资笔数：#{investStatistics.getAllSuccessInvestsNum('企业贷')}笔-->
+							<!--<br />投 标 中：#{loanStatistics.getLoanCount(LoanStatus.RAISING, '企业贷')}个-->
+						<!--</p>-->
+					<!--</div>-->
+
 					<div class="clear"></div>
 				</div>
 				<div class="content">

@@ -59,7 +59,7 @@
 			<f:event type="preRenderComponent" listener="#{loanList2.addOrder('loan.commitTime','desc')}"></f:event>
 			<ui:repeat var="loan2" value="#{loanList2.lazyModelData}" varStatus='i'>
 
-				<div class="part2-l fl clearfix">
+				<div class="part2-l fl clearfix" style="width: 1050px;">
 
 					<div class="fl">
 						<img style="width:116px;height:116px;" src="#{path}#{loan2.customPicture}" alt="" />
@@ -102,10 +102,11 @@
 				</div>
 			</ui:repeat>
 
-			<ui:include src="indexStatistics.xhtml"></ui:include>
-		</div>
-	</div>
-	<!--part2 end-->
+			<!-- 隐去显示  -->
+	<!-- <ui:include src="indexStatistics.xhtml"></ui:include>-->
+</div>
+</div>
+<!--part2 end-->
 	<div class="part3">
 		<div class="main-w">
 			<h4 class="titl clearfix">

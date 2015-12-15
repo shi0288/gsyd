@@ -49,6 +49,7 @@
 					</p:autoComplete>
 					<font color="red">*必填</font>
 					</ui:fragment>
+
 					<h:outputLabel value="账户余额"></h:outputLabel>
 					<ui:fragment>
 						<h:outputLabel id="overmoney"
@@ -58,11 +59,23 @@
 						</h:outputLabel>
 					</ui:fragment>
 
+					<h:outputLabel value="超级债权人"></h:outputLabel>
+					<ui:fragment>
+						<p:autoComplete value="#{loanHome.instance.superUser}"
+										title="输入用户名自动检索用户，请在检索结果中选择用户" emptyMessage="未搜索到用户"
+										minQueryLength="2" required="true" label="超级债权人"
+										completeMethod="#{userList.queryUsersByUserName}"
+										forceSelection="true" var="u" itemLabel="#{u.username}"
+										itemValue="#{u}" converter="archer.EntityConverter">
+						</p:autoComplete>
+						<font color="red">*必填</font>
+					</ui:fragment>
+
 					<h:outputLabel value="还款方式"></h:outputLabel>
 					<ui:fragment>
 					<h:panelGroup id="loanType">
 						<h:selectOneMenu value="#{loanHome.instance.type}" required="true"
-							converter="archer.EntityConverter" label="标的类型">
+							converter="archer.EntityConverter" label="还款方式">
 							<f:selectItem itemLabel="请选择" itemValue=""
 								noSelectionOption="true" />
 							<f:selectItems value="#{loanTypeList.allResultList}" var="type"
@@ -244,11 +257,11 @@
 
 					<h:outputLabel value="借款保证金（元）"></h:outputLabel>
 					<ui:fragment>
-						<h:inputText required="true" label="借款保证金"
+						<h:inputText label="借款保证金"
 							value="#{loanHome.instance.deposit}">
 							<f:validateDoubleRange minimum="0"></f:validateDoubleRange>
 						</h:inputText>
-						<font color="red">*必填</font>发起借款的时候冻结保证金，放款时候解冻。
+						发起借款的时候冻结保证金，放款时候解冻。
 					</ui:fragment>
 
 					<h:outputLabel value="放款时收取借款手续费（元）"></h:outputLabel>
@@ -352,13 +365,13 @@
 							var="transfer" itemLabel="#{transfer.title}" itemValue="#{transfer.id}" />
 					</h:selectOneMenu>
 
-					<h:outputLabel value="还款日设定"></h:outputLabel>
+					<h:outputLabel value="计息日设定"></h:outputLabel>
 					<ui:fragment>
 						<p:calendar value="#{loanHome.instance.interestBeginTime}"
 							pattern="yyyy-MM-dd HH:mm:ss" timeZone="GMT+8" navigator="true"
 							showButtonPanel="true">
 						</p:calendar>
-						即为还款日。如不填写，则默认放款当天；如果在放款之前计算预计利息，则该值取预计执行时间。
+						即为计息日。如不填写，则默认放款当天；如果在放款之前计算预计利息，则该值取预计执行时间。
 					</ui:fragment>
 
 					<h:outputLabel value="预计执行时间"></h:outputLabel>

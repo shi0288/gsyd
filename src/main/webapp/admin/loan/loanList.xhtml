@@ -37,8 +37,6 @@
                                 pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
                     <p:calendar id="searchEndTime" value="#{loanList.searchCommitMaxTime}"
                                 pattern="yyyy-MM-dd HH:mm:ss" navigator="true" showButtonPanel="true"></p:calendar>
-
-
                     <p:commandButton update="dataTable" process="filters"
                                      actionListener="#{nodeList.setDataTableLoadFirst(1)}"
                                      value="#{commonMsg.searchLabel}"></p:commandButton>
@@ -92,6 +90,15 @@
                         <h:outputText value="#{loan.user.username}"></h:outputText>
                         <h:link value="[详情]" outcome="/admin/user/verifyLoaner?id=#{loan.user.username}"></h:link>
                     </p:column>
+
+                    <p:column width="100">
+                        <f:facet name="header">
+                            <h:outputText value="超级债权人"></h:outputText>
+                        </f:facet>
+                        <h:outputText value="#{loan.superUser.username}"></h:outputText>
+                        <h:link value="[详情]" outcome="/admin/user/verifyLoaner?id=#{loan.superUser.username}"></h:link>
+                    </p:column>
+
                     <p:column>
                         <f:facet name="header">
                             <h:outputText value="借款金额"></h:outputText>
@@ -168,7 +175,7 @@
                             </ui:fragment>
                         </ui:fragment>
 
-                        <ui:fragment rendered="#{loanList.example.status == LoanStatus.REPAYING}">
+                        <ui:fragment rendered="#{loan.status == LoanStatus.REPAYING}">
                             |
                             <h:commandLink onclick="return confirm('确定要提前还款吗？');" value="提前还款"
                                            action="#{systemRepayHome.advanceRepay(loan.id)}">
