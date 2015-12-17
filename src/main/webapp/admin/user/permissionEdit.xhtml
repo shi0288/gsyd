@@ -22,7 +22,7 @@
                 <p:button value="#{userMsg.permissionManagerLabel}"></p:button>
             </p:toolbarGroup>
         </p:toolbar>
-        <p:spacer></p:spacer> 
+        <p:spacer></p:spacer>
             <h:form id="form">
                 <h:panelGrid columns="2"  columnClasses="col1,col2" id="panel">
                     <h:outputLabel value="#{commonMsg.IDLabel}"></h:outputLabel>
@@ -31,27 +31,27 @@
                         validatorMessage="#{commonMsg.IDRuleMessage}">
                         	<f:validateRegex pattern="^[a-zA-Z0-9_[-]]+$" />
                         </h:inputText>
-                    
+
                     <h:outputLabel value="#{commonMsg.nameLabel}"></h:outputLabel>
                     <h:inputText id="name" required="true" label="#{commonMsg.nameLabel}"
                         value="#{permissionHome.instance.name}" requiredMessage="#{commonMsg.NameRequired}">
                         <f:validateLength minimum="2"></f:validateLength>
                     </h:inputText>
-                    
+
                     <h:outputLabel value="#{commonMsg.descriptionLabel}"></h:outputLabel>
                     <h:inputTextarea value="#{permissionHome.instance.description}" onkeyup="$(this).val($(this).val().substring(0,200))" style="width:600px;height:60px;"></h:inputTextarea>
-                    
-				   	<!-- 权限的父结点 -->         
+
+				   	<!-- 权限的父结点 -->
                     <h:outputLabel value="#{menuMsg.parentLabel}"
 						styleClass="form-input-label"></h:outputLabel>
 					<h:selectOneMenu id="permissionTree" converter="archer.EntityConverter"
 						value="#{permissionHome.instance.parent}"
-						label="#{menuMsg.parentLabel}" converter="archer.EntityConverter">						
+						label="#{menuMsg.parentLabel}" >
 						<f:selectItem itemValue="" itemLabel="#{menuMsg.hasNot}" />
 						<f:selectItems value="#{permissionList.allResultList}" var="p"
 							itemValue="#{p}" itemLabel="#{p.name}" />
-					</h:selectOneMenu> 
-                    
+					</h:selectOneMenu>
+
                     <!-- 权限的顺序 -->
                     <h:outputLabel value="#{commonMsg.seqNumLabel}"
 						styleClass="form-input-label"></h:outputLabel>
@@ -60,23 +60,23 @@
 						<p:slider minValue="-50" maxValue="50" for="permissionSeqNum"
 							style="width:500px"></p:slider>
 					</ui:fragment>
-					
+
 					<!-- 权限是否必选 -->
 <!-- 					<h:outputLabel value="必选权限"></h:outputLabel> -->
 <!-- 					<h:selectBooleanCheckbox value="#{permissionHome.instance.mustSelected}"> -->
 <!-- 					</h:selectBooleanCheckbox> -->
-					
-                    
+
+
                     <h:outputLabel value="#{commonMsg.actionLabel}"></h:outputLabel>
                     <ui:fragment>
-                        <p:commandButton action="#{permissionHome.save}" update="@form" 
+                        <p:commandButton action="#{permissionHome.save}" update="@form"
                             value="#{commonMsg.saveLabel}" id="saveBtn"></p:commandButton>
                         <p:commandButton type="reset" value="#{commonMsg.resetLabel}"></p:commandButton>
                         <p:blockUI block="panel" trigger="saveBtn"></p:blockUI>
                     </ui:fragment>
-                    
+
                 </h:panelGrid>
-            
+
             </h:form>
           </div>
         </ui:define>

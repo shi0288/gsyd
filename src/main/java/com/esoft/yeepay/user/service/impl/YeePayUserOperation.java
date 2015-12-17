@@ -124,9 +124,8 @@ public class YeePayUserOperation extends YeePayOperationServiceAbs<User> {
 		}
 		// 响应的参数 为xml格式
 		String respXML = request.getParameter("resp");
-		log.debug("收到的");
-		log.debug(respXML.toString());
 		// 签名
+		log.info("开户：respXML："+respXML);
 		String sign = request.getParameter("sign");
 		boolean flag = CFCASignUtil.isVerifySign(respXML, sign);
 		if (flag) {
@@ -194,6 +193,9 @@ public class YeePayUserOperation extends YeePayOperationServiceAbs<User> {
 		}
 		// 响应的参数 为xml格式
 		String notifyxml = request.getParameter("notify");
+
+
+		System.out.println("notifyxml : "+notifyxml);
 		// 签名
 		String sign = request.getParameter("sign");
 		boolean flag = CFCASignUtil.isVerifySign(notifyxml, sign);

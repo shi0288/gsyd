@@ -492,8 +492,6 @@ public class UserHome extends EntityHome<User> implements java.io.Serializable {
 	@Override
 	@Transactional(readOnly = false)
 	public String save() {
-		
-		
 		if (StringUtils.isNotEmpty(getInstance().getIdCard())) {
 			String idCard=getInstance().getIdCard();
             String result=CheckUtil.IDCardValidate(idCard);
